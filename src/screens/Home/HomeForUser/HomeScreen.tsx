@@ -64,7 +64,7 @@ const HomeScreen = () => {
         {/* Event Card */}
         <View style={styles.card}>
           <Image
-            source={require('./assets/event1.png')}
+            source={require('../../../assets/Images/logo1.jpg')}
             style={styles.cardImage}
           />
           <View style={styles.cardContent}>

@@ -1,13 +1,13 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigation/RootStackParamList';
 import SplashScreen from '../screens/onboradingScreenAndSplash/SplashScreen';
-import HomeScreen from '../screens/Home/HomeScreen';
 import React from 'react';
 import OnboardingScreen1 from '../screens/onboradingScreenAndSplash/Onboarding1';
 import OnboardingScreen2 from '../screens/onboradingScreenAndSplash/Onboarding2';
 import OnboardingScreen3 from '../screens/onboradingScreenAndSplash/Onboarding3';
 import SigninScreen from '../screens/LoginSigninScreens/signinScreen';
 import SignupScreen from '../screens/LoginSigninScreens/signupScreen';
+import HomeScreen from '../screens/Home/HomeForUser/HomeScreen';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
