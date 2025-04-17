@@ -15,11 +15,14 @@ import {
 } from 'react-native';
 import {
   TextInput,
-  Button,
+  Button, IconButton,
 } from '@react-native-material/core';
 import axios from 'axios';
 import {getCredential,storeCredential} from "../utils/Storage";
 // import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import Icon from 'react-native-vector-icons/Ionicons';
+
+
 
 const LogoElement = () => {
   return (
@@ -31,6 +34,7 @@ const LogoElement = () => {
     </View>
   );
 };
+const myIcon = <Icon name="rocket" size={30} color="#900" />;
 
 
 const SignUpLink = ({navigation}) => {
@@ -51,6 +55,8 @@ export default function SigninScreen({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState('');
   const [errorLogin, setErrorLogin] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const validateInputs = () => {
     let error = {};
@@ -135,6 +141,7 @@ if(errorLogin){
         variant="outlined"
         value={userName}
         onChangeText={setUserName}
+        leading={props => <Icon name="person-outline" {...props} />}
       />
       {errors.username ? (
         <Text style={styles.errorText}>{errors.username}</Text>
@@ -144,11 +151,27 @@ if(errorLogin){
         variant="outlined"
         value={pass}
         onChangeText={setPass}
-        secureTextEntry={true}
+        secureTextEntry={!showPassword}
+        trailing={(props) => (
+            <IconButton
+                onPress={() => setShowPassword(!showPassword)}
+                icon={(iconProps) => (
+                    <Icon
+                        name={showPassword ? 'eye-off' : 'eye'}
+                        size={24}
+                        color={iconProps.color}
+                    />
+                )}
+                {...props}
+            />
+        )}
+        leading={props => <Icon name="lock-closed-outline" {...props} />}
+
       />
       {errors.password ? (
         <Text style={styles.errorText}>{errors.password}</Text>
       ) : null}
+
       <Button
         style={styles.signInButton}
         title={'Login'}
@@ -156,6 +179,7 @@ if(errorLogin){
       />
 
       <SignUpLink navigation={navigation} />
+
     </View>
   );
 }
