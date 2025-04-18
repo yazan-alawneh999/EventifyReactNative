@@ -69,6 +69,7 @@ export default function SigninScreen({navigation}) {
 
 const handleLogin = async () => {
   setIsLoading(true);
+  setErrorLogin("test")
   if (!validateInputs()) {
     setIsLoading(false);
     return;
@@ -92,7 +93,10 @@ const handleLogin = async () => {
     if (error.response) {
       console.log("Server Response", error.response.data);
     }
-
+    if (!error.response) {
+      setErrorLogin('Network error or no response from server');
+      return;
+    }
     // Fix: error.status doesn't exist — should be error.response?.status
     switch (error.response.status) {
       case 401:
@@ -100,10 +104,9 @@ const handleLogin = async () => {
             `UnAuthorized`
         );
         break;
-        default:
-          setErrorLogin(
-              error.response.data
-          );
+      default:
+        setErrorLogin("Unknown error");
+
     }
 
   } finally {
@@ -112,17 +115,22 @@ const handleLogin = async () => {
 };
 
 
-if(errorLogin){
-  Alert.alert('Login Error', errorLogin, [
-    {
-      text: 'Ok',
-      onPress: () => {
-        console.log('Cancel Pressed')},
-      style: 'cancel',
-    },
-    // {text: 'OK', onPress: () => console.log('OK Pressed')},
-  ]);
-}
+
+
+
+
+    if (errorLogin) {
+      Alert.alert('Login Error', errorLogin, [
+        {
+          text: 'Ok',
+          onPress: () => {
+
+          },
+          style: 'cancel',
+        },
+      ]);
+    }
+
 
   if (isLoading) {
     return (

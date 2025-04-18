@@ -1,14 +1,29 @@
-/* eslint-disable react-native/no-inline-styles */
-// screens/ProfileScreen.js
-import React, {useState} from 'react';
+
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
   Image,
   Text,
-  TextInput,
   TouchableOpacity,
+  ActivityIndicator,
+  SafeAreaView,
+  StatusBar,
+  Alert,
+  // TextInput,
+
+
+
 } from 'react-native';
+
+import axios from 'axios';
+import {getCredential,storeCredential} from "../utils/Storage";
+// import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import Icon from 'react-native-vector-icons/Ionicons';
+
+import TextInput from '@react-native-material/core/src/TextInput';
+import IconButton from '@react-native-material/core/src/IconButton';
+import Button from '@react-native-material/core/src/Button';
 
 const LogoElement = () => {
   return (
@@ -20,75 +35,8 @@ const LogoElement = () => {
     </View>
   );
 };
+const myIcon = <Icon name="rocket" size={30} color="#900" />;
 
-const SigninInputs = ({navigation}) => {
-  const [userName, setUserName] = useState('');
-  const [pass, setPass] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false);
-
-  const handleSignIn = () => {
-    navigation.navigate('RootHomeScreen');
-  };
-
-  return (
-    <View style={styles.signinContainer}>
-      <Text style={styles.titleFont}>Sign in</Text>
-      <View style={styles.inputContainer}>
-        <Image
-          source={require('../../assets/Images/emailIcon.png')}
-          style={styles.icon}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="User Name"
-          placeholderTextColor="#888"
-          value={userName}
-          onChangeText={value => setUserName(value)}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Image
-          source={require('../../assets/Images/lockIcon.png')}
-          style={styles.icon}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Your password"
-          placeholderTextColor="#888"
-          value={pass}
-          onChangeText={val => setPass(val)}
-          secureTextEntry={!passwordVisible}
-          autoCapitalize="none"
-        />
-        <TouchableOpacity
-          onPress={() => setPasswordVisible(!passwordVisible)}
-          style={styles.toggleIconContainer}>
-          <Image
-            source={
-              passwordVisible
-                ? require('../../assets/Images/showPassIcon.png')
-                : require('../../assets/Images/hideIcon.png')
-            }
-            style={styles.toggleIcon}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-        <Text style={styles.signInButtonText}>Login</Text>
-        <View style={styles.ArrowIconContainer}>
-          <Image
-            source={require('../../assets/Images/ArrowIcon.png')}
-            style={styles.ArrowIcon}
-          />
-        </View>
-      </TouchableOpacity>
-    </View>
-  );
-};
 
 const SignUpLink = ({navigation}) => {
   return (
@@ -102,32 +50,176 @@ const SignUpLink = ({navigation}) => {
 };
 
 export default function SigninScreen({navigation}) {
+  const [userName, setUserName] = useState('');
+  const [pass, setPass] = useState('');
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState('');
+  const [errorLogin, setErrorLogin] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+
+  const validateInputs = () => {
+    let error = {};
+    if (!userName) error.username = 'Username is required';
+    if (!pass) error.password = 'Password is required';
+
+    setErrors(error);
+    return Object.keys(error).length === 0;
+  };
+
+  const handleLogin = async () => {
+    setIsLoading(true);
+
+    if (!validateInputs()) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+          "https://7130-5-45-132-73.ngrok-free.app/api/event-manager/auth/login",
+          {
+            username: userName,
+            password: pass,
+          }
+      );
+
+      console.log("Username:", userName, "Password:", pass);
+      console.log("✅ Login Success", response.data);
+      await storeCredential(response.data);
+
+    } catch (error) {
+      console.log("❌ Axios Error", error.message);
+      if (error.response) {
+        console.log("Server Response", error.response.data);
+      }
+      if (!error.response) {
+        setErrorLogin('Network error or no response from server');
+        return;
+      }
+      // Fix: error.status doesn't exist — should be error.response?.status
+      switch (error.response.status) {
+        case 401:
+          setErrorLogin(
+              `UnAuthorized`
+          );
+          break;
+        default:
+          setErrorLogin("Unknown error");
+
+      }
+
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    if (errorLogin) {
+      console.log("⚠️ Showing alert with error:", errorLogin); // Debug log
+      Alert.alert('Login Error', errorLogin, [
+        {
+          text: 'Ok',
+          onPress: () => {
+            setErrorLogin('');
+          },
+          style: 'cancel',
+        },
+      ]);
+    }
+  }, [errorLogin]);
+
+
+
+  if (isLoading) {
+    return (
+        <SafeAreaView style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#626df8" />
+          <Text>Loading...</Text>
+        </SafeAreaView>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <LogoElement />
-      <SigninInputs navigation={navigation} />
+      <TextInput
+          // style={styles.input}
+        label={'User Name'}
+        variant="outlined"
+        value={userName}
+        onChangeText={setUserName}
+        leading={props => <Icon name="person-outline" {...props} />}
+      />
+      {errors.username ? (
+        <Text style={styles.errorText}>{errors.username}</Text>
+      ) : null}
+      <TextInput
+          // style={styles.input}
+        label={'Password'}
+        variant="outlined"
+        value={pass}
+        onChangeText={setPass}
+        secureTextEntry={!showPassword}
+        trailing={(props) => (
+            <IconButton
+                onPress={() => setShowPassword(!showPassword)}
+                icon={(iconProps) => (
+                    <Icon
+                        name={showPassword ? 'eye-off' : 'eye'}
+                        size={24}
+                        color={iconProps.color}
+                    />
+                )}
+                {...props}
+            />
+        )}
+        leading={props => <Icon name="lock-closed-outline" {...props} />}
+
+      />
+      {errors.password ? (
+        <Text style={styles.errorText}>{errors.password}</Text>
+      ) : null}
+
+      <Button
+        style={styles.signInButton}
+        title={'Login'}
+        onPress={() => handleLogin()}
+      />
+
       <SignUpLink navigation={navigation} />
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    gap: 16,
+    padding: 8,
+    justifyContent: 'center',
+
     backgroundColor: 'white',
     height: '100%',
     width: '100%',
   },
   logoContainer: {
     display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: '25%',
-    width: '100%',
-    height: '20%',
+    alignSelf: 'center',
+    // marginHorizontal: 'auto',
+    marginTop: 100,
+
+    width: 200,
+    height: 120,
   },
   logoPic: {
-    width: '70%',
-    height: '100%',
+   width:'100%',
+    height: '50',
+    alignSelf: 'center',
+    marginTop: 40,
   },
   signinContainer: {
     marginHorizontal: '5%',
@@ -149,11 +241,11 @@ const styles = StyleSheet.create({
     height: '25%',
     marginBlock: '2%',
   },
-  input: {
-    fontSize: 16,
-    color: '#333',
-    width: '75%',
-  },
+  // input: {
+  //   fontSize: 16,
+  //   color: '#333',
+  //   width: '75%',
+  // },
   icon: {
     width: '10%',
     height: '75%',
@@ -173,11 +265,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#626df8',
     borderRadius: 16,
+    padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    width: '80%',
-    marginStart: '10%',
-    height: '25%',
+    width: '100%',
+    marginEnd: '10%',
+    height: 'auto',
     marginTop: '15%',
   },
   signInButtonText: {
@@ -212,5 +305,23 @@ const styles = StyleSheet.create({
   linkText: {
     fontWeight: 'bold',
     fontSize: 15,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+  },
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    paddingTop: StatusBar.currentHeight,
+  },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
   },
 });
