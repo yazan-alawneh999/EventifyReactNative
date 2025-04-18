@@ -17,10 +17,10 @@ import {
 } from 'react-native';
 
 import axios from 'axios';
-import {getCredential,storeCredential} from "../utils/Storage";
+import {getCredential,storeCredential} from "../../../utils/Storage";
 // import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import { CommonActions } from '@react-navigation/native';
 import TextInput from '@react-native-material/core/src/TextInput';
 import IconButton from '@react-native-material/core/src/IconButton';
 import Button from '@react-native-material/core/src/Button';
@@ -70,15 +70,13 @@ export default function SigninScreen({navigation}) {
 
   const handleLogin = async () => {
     setIsLoading(true);
-
     if (!validateInputs()) {
       setIsLoading(false);
       return;
     }
-
     try {
       const response = await axios.post(
-          "https://7130-5-45-132-73.ngrok-free.app/api/event-manager/auth/login",
+          "https://db03-37-123-66-6.ngrok-free.app/api/event-manager/auth/login",
           {
             username: userName,
             password: pass,
@@ -88,8 +86,16 @@ export default function SigninScreen({navigation}) {
       console.log("Username:", userName, "Password:", pass);
       console.log("✅ Login Success", response.data);
       await storeCredential(response.data);
+      navigation.popTo('RootHomeScreen');
+      navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'RootHomeScreen' }],
+          })
+      );
 
-    } catch (error) {
+    }
+    catch (error) {
       console.log("❌ Axios Error", error.message);
       if (error.response) {
         console.log("Server Response", error.response.data);
@@ -110,7 +116,8 @@ export default function SigninScreen({navigation}) {
 
       }
 
-    } finally {
+    }
+    finally {
       setIsLoading(false);
     }
   };
