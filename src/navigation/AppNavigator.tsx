@@ -7,7 +7,7 @@ import OnboardingScreen2 from '../screens/onboradingScreenAndSplash/Onboarding2'
 import OnboardingScreen3 from '../screens/onboradingScreenAndSplash/Onboarding3';
 import SigninScreen from '../screens/LoginSigninScreens/signinScreen';
 import SignupScreen from '../screens/LoginSigninScreens/signupScreen';
-import HomeScreen from '../screens/Home/HomeForUser/HomeScreen';
+import AppNavigatorForUser from './AppNavigatorUser';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
@@ -43,7 +43,11 @@ export default function AppNavigator() {
         component={SignupScreen}
         options={{headerShown: false}}
       />
-      <Stack.Screen name="RootHomeScreen" component={HomeScreen} />
+      <Stack.Screen
+        name="RootHomeScreen"
+        component={AppNavigatorForUser}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 }
