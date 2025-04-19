@@ -1,5 +1,6 @@
-
-import React, {useEffect, useState} from 'react';
+/* eslint-disable react-native/no-inline-styles */
+// screens/ProfileScreen.js
+import React, {useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -10,26 +11,24 @@ import {
   SafeAreaView,
   StatusBar,
   Alert,
-  // TextInput,
-
-
 
 } from 'react-native';
-
+import {
+  TextInput,
+  Button, IconButton,
+} from '@react-native-material/core';
 import axios from 'axios';
-import {getCredential,storeCredential} from "../../../utils/Storage";
+import {getCredential,storeCredential} from "../utils/Storage";
 // import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import Icon from 'react-native-vector-icons/Ionicons';
-import { CommonActions } from '@react-navigation/native';
-import TextInput from '@react-native-material/core/src/TextInput';
-import IconButton from '@react-native-material/core/src/IconButton';
-import Button from '@react-native-material/core/src/Button';
+
+
 
 const LogoElement = () => {
   return (
     <View style={styles.logoContainer}>
       <Image
-        source={require('../../assets/Images/logo1.jpg')}
+        source={require('../assets/images/logo.png')}
         style={styles.logoPic}
       />
     </View>
@@ -68,84 +67,77 @@ export default function SigninScreen({navigation}) {
     return Object.keys(error).length === 0;
   };
 
-  const handleLogin = async () => {
-    setIsLoading(true);
-    if (!validateInputs()) {
-      setIsLoading(false);
+const handleLogin = async () => {
+  setIsLoading(true);
+  setErrorLogin("test")
+  if (!validateInputs()) {
+    setIsLoading(false);
+    return;
+  }
+
+  try {
+    const response = await axios.post(
+        "https://7130-5-45-132-73.ngrok-free.app/api/event-manager/auth/login",
+        {
+          username: userName,
+          password: pass,
+        }
+    );
+
+    console.log("Username:", userName, "Password:", pass);
+    console.log("✅ Login Success", response.data);
+    await storeCredential(response.data);
+
+  } catch (error) {
+    console.log("❌ Axios Error", error.message);
+    if (error.response) {
+      console.log("Server Response", error.response.data);
+    }
+    if (!error.response) {
+      setErrorLogin('Network error or no response from server');
       return;
     }
-    try {
-      const response = await axios.post(
-          "https://db03-37-123-66-6.ngrok-free.app/api/event-manager/auth/login",
-          {
-            username: userName,
-            password: pass,
-          }
-      );
-
-      console.log("Username:", userName, "Password:", pass);
-      console.log("✅ Login Success", response.data);
-      await storeCredential(response.data);
-      navigation.popTo('RootHomeScreen');
-      navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: 'RootHomeScreen' }],
-          })
-      );
+    // Fix: error.status doesn't exist — should be error.response?.status
+    switch (error.response.status) {
+      case 401:
+        setErrorLogin(
+            `UnAuthorized`
+        );
+        break;
+      default:
+        setErrorLogin("Unknown error");
 
     }
-    catch (error) {
-      console.log("❌ Axios Error", error.message);
-      if (error.response) {
-        console.log("Server Response", error.response.data);
-      }
-      if (!error.response) {
-        setErrorLogin('Network error or no response from server');
-        return;
-      }
-      // Fix: error.status doesn't exist — should be error.response?.status
-      switch (error.response.status) {
-        case 401:
-          setErrorLogin(
-              `UnAuthorized`
-          );
-          break;
-        default:
-          setErrorLogin("Unknown error");
 
-      }
-
-    }
-    finally {
-      setIsLoading(false);
-    }
-  };
+  } finally {
+    setIsLoading(false);
+  }
+};
 
 
-  useEffect(() => {
+
+
+
+
     if (errorLogin) {
-      console.log("⚠️ Showing alert with error:", errorLogin); // Debug log
       Alert.alert('Login Error', errorLogin, [
         {
           text: 'Ok',
           onPress: () => {
-            setErrorLogin('');
+
           },
           style: 'cancel',
         },
       ]);
     }
-  }, [errorLogin]);
-
 
 
   if (isLoading) {
     return (
-        <SafeAreaView style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#626df8" />
-          <Text>Loading...</Text>
-        </SafeAreaView>
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#626df8" />
+        <Text>Loading...</Text>
+      </SafeAreaView>
     );
   }
 
@@ -153,7 +145,6 @@ export default function SigninScreen({navigation}) {
     <View style={styles.container}>
       <LogoElement />
       <TextInput
-          // style={styles.input}
         label={'User Name'}
         variant="outlined"
         value={userName}
@@ -164,7 +155,6 @@ export default function SigninScreen({navigation}) {
         <Text style={styles.errorText}>{errors.username}</Text>
       ) : null}
       <TextInput
-          // style={styles.input}
         label={'Password'}
         variant="outlined"
         value={pass}
@@ -207,7 +197,6 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 16,
     padding: 8,
-    justifyContent: 'center',
 
     backgroundColor: 'white',
     height: '100%',
@@ -223,10 +212,8 @@ const styles = StyleSheet.create({
     height: 120,
   },
   logoPic: {
-   width:'100%',
-    height: '50',
-    alignSelf: 'center',
-    marginTop: 40,
+    width: '70%',
+    height: '100%',
   },
   signinContainer: {
     marginHorizontal: '5%',
@@ -248,11 +235,11 @@ const styles = StyleSheet.create({
     height: '25%',
     marginBlock: '2%',
   },
-  // input: {
-  //   fontSize: 16,
-  //   color: '#333',
-  //   width: '75%',
-  // },
+  input: {
+    fontSize: 16,
+    color: '#333',
+    width: '75%',
+  },
   icon: {
     width: '10%',
     height: '75%',
@@ -272,11 +259,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#626df8',
     borderRadius: 16,
-    padding: 5,
+    padding: 6,
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
-    marginEnd: '10%',
+    width: '80%',
+    marginStart: '10%',
     height: 'auto',
     marginTop: '15%',
   },
@@ -324,11 +311,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
     paddingTop: StatusBar.currentHeight,
-  },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
   },
 });
