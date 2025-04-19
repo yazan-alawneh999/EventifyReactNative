@@ -9,7 +9,7 @@ import Profile from '../screens/Home/HomeForUser/ProfileUserScreen';
 
 const Stack = createNativeStackNavigator();
 
-const AppNavigatorForUser = () => {
+const NavigatorForUser = () => {
   return (
     <Stack.Navigator
       initialRouteName="Home"
@@ -24,4 +24,4 @@ const AppNavigatorForUser = () => {
   );
 };
 
-export default AppNavigatorForUser;
+export default NavigatorForUser;

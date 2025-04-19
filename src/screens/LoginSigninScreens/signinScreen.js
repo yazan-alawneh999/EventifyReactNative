@@ -1,4 +1,3 @@
-
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -11,16 +10,13 @@ import {
   StatusBar,
   Alert,
   // TextInput,
-
-
-
 } from 'react-native';
 
 import axios from 'axios';
-import {getCredential,storeCredential} from "../../../utils/Storage";
+import {getCredential, storeCredential} from '../../../utils/Storage';
 // import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import Icon from 'react-native-vector-icons/Ionicons';
-import { CommonActions } from '@react-navigation/native';
+import {CommonActions} from '@react-navigation/native';
 import TextInput from '@react-native-material/core/src/TextInput';
 import IconButton from '@react-native-material/core/src/IconButton';
 import Button from '@react-native-material/core/src/Button';
@@ -36,7 +32,6 @@ const LogoElement = () => {
   );
 };
 const myIcon = <Icon name="rocket" size={30} color="#900" />;
-
 
 const SignUpLink = ({navigation}) => {
   return (
@@ -58,11 +53,14 @@ export default function SigninScreen({navigation}) {
   const [errorLogin, setErrorLogin] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-
   const validateInputs = () => {
     let error = {};
-    if (!userName) error.username = 'Username is required';
-    if (!pass) error.password = 'Password is required';
+    if (!userName) {
+      error.username = 'Username is required';
+    }
+    if (!pass) {
+      error.password = 'Password is required';
+    }
 
     setErrors(error);
     return Object.keys(error).length === 0;
@@ -76,29 +74,27 @@ export default function SigninScreen({navigation}) {
     }
     try {
       const response = await axios.post(
-          "https://db03-37-123-66-6.ngrok-free.app/api/event-manager/auth/login",
-          {
-            username: userName,
-            password: pass,
-          }
+        'https://01a5-37-123-66-6.ngrok-free.app/api/event-manager/auth/login',
+        {
+          username: userName,
+          password: pass,
+        },
       );
 
-      console.log("Username:", userName, "Password:", pass);
-      console.log("✅ Login Success", response.data);
+      console.log('Username:', userName, 'Password:', pass);
+      console.log('✅ Login Success', response.data);
       await storeCredential(response.data);
       navigation.popTo('RootHomeScreen');
       navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: 'RootHomeScreen' }],
-          })
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'RootHomeScreen'}],
+        }),
       );
-
-    }
-    catch (error) {
-      console.log("❌ Axios Error", error.message);
+    } catch (error) {
+      console.log('❌ Axios Error', error.message);
       if (error.response) {
-        console.log("Server Response", error.response.data);
+        console.log('Server Response', error.response.data);
       }
       if (!error.response) {
         setErrorLogin('Network error or no response from server');
@@ -107,25 +103,19 @@ export default function SigninScreen({navigation}) {
       // Fix: error.status doesn't exist — should be error.response?.status
       switch (error.response.status) {
         case 401:
-          setErrorLogin(
-              `UnAuthorized`
-          );
+          setErrorLogin('UnAuthorized');
           break;
         default:
-          setErrorLogin("Unknown error");
-
+          setErrorLogin('Unknown error');
       }
-
-    }
-    finally {
+    } finally {
       setIsLoading(false);
     }
   };
 
-
   useEffect(() => {
     if (errorLogin) {
-      console.log("⚠️ Showing alert with error:", errorLogin); // Debug log
+      console.log('⚠️ Showing alert with error:', errorLogin); // Debug log
       Alert.alert('Login Error', errorLogin, [
         {
           text: 'Ok',
@@ -138,14 +128,12 @@ export default function SigninScreen({navigation}) {
     }
   }, [errorLogin]);
 
-
-
   if (isLoading) {
     return (
-        <SafeAreaView style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#626df8" />
-          <Text>Loading...</Text>
-        </SafeAreaView>
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#626df8" />
+        <Text>Loading...</Text>
+      </SafeAreaView>
     );
   }
 
@@ -153,7 +141,7 @@ export default function SigninScreen({navigation}) {
     <View style={styles.container}>
       <LogoElement />
       <TextInput
-          // style={styles.input}
+        // style={styles.input}
         label={'User Name'}
         variant="outlined"
         value={userName}
@@ -164,27 +152,26 @@ export default function SigninScreen({navigation}) {
         <Text style={styles.errorText}>{errors.username}</Text>
       ) : null}
       <TextInput
-          // style={styles.input}
+        // style={styles.input}
         label={'Password'}
         variant="outlined"
         value={pass}
         onChangeText={setPass}
         secureTextEntry={!showPassword}
-        trailing={(props) => (
-            <IconButton
-                onPress={() => setShowPassword(!showPassword)}
-                icon={(iconProps) => (
-                    <Icon
-                        name={showPassword ? 'eye-off' : 'eye'}
-                        size={24}
-                        color={iconProps.color}
-                    />
-                )}
-                {...props}
-            />
+        trailing={props => (
+          <IconButton
+            onPress={() => setShowPassword(!showPassword)}
+            icon={iconProps => (
+              <Icon
+                name={showPassword ? 'eye-off' : 'eye'}
+                size={24}
+                color={iconProps.color}
+              />
+            )}
+            {...props}
+          />
         )}
         leading={props => <Icon name="lock-closed-outline" {...props} />}
-
       />
       {errors.password ? (
         <Text style={styles.errorText}>{errors.password}</Text>
@@ -197,7 +184,6 @@ export default function SigninScreen({navigation}) {
       />
 
       <SignUpLink navigation={navigation} />
-
     </View>
   );
 }
@@ -223,7 +209,7 @@ const styles = StyleSheet.create({
     height: 120,
   },
   logoPic: {
-   width:'100%',
+    width: '100%',
     height: '50',
     alignSelf: 'center',
     marginTop: 40,
