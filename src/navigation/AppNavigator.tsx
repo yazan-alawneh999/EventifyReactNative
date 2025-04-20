@@ -8,11 +8,12 @@ import OnboardingScreen3 from '../screens/onboradingScreenAndSplash/Onboarding3'
 import SigninScreen from '../screens/LoginSigninScreens/signinScreen';
 import SignupScreen from '../screens/LoginSigninScreens/signupScreen';
 import HomeScreen from '../screens/Home/HomeForUser/HomeScreen';
+import {PayPal} from "../screens/PayPalScreen/PayPal";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
   return (
-    <Stack.Navigator initialRouteName="RootSplashScreen">
+    <Stack.Navigator initialRouteName="PayPalScreen">
       <Stack.Screen
         name="RootSplashScreen"
         component={SplashScreen}
@@ -48,6 +49,10 @@ export default function AppNavigator() {
                     component={HomeScreen}
                     options={{headerShown:false}}
       />
+        <Stack.Screen name="PayPalScreen"
+                      component={PayPal}
+                      options={{headerShown:false}}
+        />
     </Stack.Navigator>
   );
 }
