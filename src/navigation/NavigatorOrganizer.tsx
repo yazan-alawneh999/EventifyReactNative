@@ -10,9 +10,10 @@ const Stack = createNativeStackNavigator();
 const NavigatorForOrganizer = () => {
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="list"
       screenOptions={{headerShown: false}}>
       <Stack.Screen name="list" component={ListEventScreen} />
+      <Stack.Screen name="CreateEvent" component={CreatNowEventScreen} />
       <Stack.Screen name="file-plus" component={CreatNowEventScreen} />
       <Stack.Screen name="Map" component={ProfileScreen} />
       <Stack.Screen name="user" component={ProfileScreen} />
