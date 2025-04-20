@@ -9,6 +9,8 @@ export const storeCredential = async value => {
   }
 };
 
+
+
 export const getCredential = async () => {
     try {
         const jsonValue = await AsyncStorage.getItem('credential');
@@ -24,4 +26,7 @@ export const logout = async () => {
     } catch (e) {
         console.error('Error removing data', e);
     }
+
+    // remove cradential
+    // navigate to signin
 };
