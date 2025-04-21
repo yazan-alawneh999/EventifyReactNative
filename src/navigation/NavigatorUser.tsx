@@ -15,7 +15,7 @@ import AllEventAttendanceScreen from '../screens/OrganizerScreens/AllEventAttend
 
 const Stack = createNativeStackNavigator();
 
-const AppNavigatorForUser = () => {
+const NavigatorForUser = () => {
   return (
     <Stack.Navigator
       initialRouteName="Home"
@@ -36,4 +36,4 @@ const AppNavigatorForUser = () => {
   );
 };
 
-export default AppNavigatorForUser;
+export default NavigatorForUser;
