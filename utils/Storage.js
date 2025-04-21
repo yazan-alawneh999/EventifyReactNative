@@ -32,6 +32,16 @@ export const getRole = async () => {
     }
 };
 
+export const isOrganizer = async () => {
+    try {
+        const role = await getRole();
+        return role === 2;
+    } catch (e) {
+        console.error('Error checking organizer role:', e);
+        return false;
+    }
+};
+
 export const logout = async () => {
     try {
         await AsyncStorage.removeItem('credential');
