@@ -20,6 +20,7 @@ import {CommonActions} from '@react-navigation/native';
 import TextInput from '@react-native-material/core/src/TextInput';
 import IconButton from '@react-native-material/core/src/IconButton';
 import Button from '@react-native-material/core/src/Button';
+import {api, BASE_URL} from "../Api";
 
 const LogoElement = () => {
   return (
@@ -53,7 +54,28 @@ export default function SigninScreen({navigation}) {
   const [errorLogin, setErrorLogin] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const validateInputs = () => {
+
+    // useEffect(() => {
+    //     const checkCredential = async () => {
+    //         const credentials = await getCredential();
+    //         if (credentials?.token) {
+    //             navigation.reset({
+    //                 index: 0,
+    //                 routes: [{ name: 'RootHomeScreen' }],
+    //             });
+    //         } else {
+    //             navigation.reset({
+    //                 index: 0,
+    //                 routes: [{ name: 'Signin' }],
+    //             });
+    //         }
+    //     };
+    //
+    //     checkCredential();
+    // }, []);
+
+
+    const validateInputs = () => {
     let error = {};
     if (!userName) {
       error.username = 'Username is required';
@@ -80,6 +102,22 @@ export default function SigninScreen({navigation}) {
           password: pass,
         },
       );
+        try {
+          const response = await api.post(
+              `${BASE_URL}/api/event-manager/auth/login`,
+              {
+                username: userName,
+                password: pass,
+              }
+          );
+          console.log(response.data);
+      // const response = await axios.post(
+      //     "https://db03-37-123-66-6.ngrok-free.app/api/event-manager/auth/login",
+      //     {
+      //       username: userName,
+      //       password: pass,
+      //     }
+      // );
 
       console.log('Username:', userName, 'Password:', pass);
       console.log('✅ Login Success', response.data);

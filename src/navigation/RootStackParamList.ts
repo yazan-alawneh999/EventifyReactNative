@@ -8,4 +8,5 @@ export type RootStackParamList = {
   RootSignupScreen: undefined;
   Signup: undefined;
   Signin: undefined;
+  PayPalScreen: undefined;
 };

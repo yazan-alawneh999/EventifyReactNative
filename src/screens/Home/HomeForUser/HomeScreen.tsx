@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -18,7 +18,16 @@ const categories = [
   {title: 'Food', color: '#27C083', icon: 'restaurant-outline'},
 ];
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({navigation }) => {
+  // const [userProfil,setUserProfile] = useState({});
+  // const getUserProfile = () => {
+  //   // hit api
+  //   setUserProfile({});
+  // };
+  // getUserProfile();
+  // if (userProfil === null) {
+  //   // ui inform user that there is an issue
+  // }
   return (
     <View style={{flex: 1, backgroundColor: '#f9f9f9'}}>
       <ScrollView contentContainerStyle={{paddingBottom: 80}}>
@@ -27,7 +36,7 @@ const HomeScreen = ({navigation}) => {
           <View style={styles.headerTop}>
             <View>
               <Text style={styles.locationLabel}>Current Location</Text>
-              <Text style={styles.locationValue}>New York, USA</Text>
+              <Text style={styles.locationValue}>New York, USA </Text>
             </View>
             <Icon name="notifications-outline" size={24} color="#fff" />
           </View>
