@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import BottomNavBar from '../../components/BottomNavbarForUser.tsx';
-import SuccessDialog  from '../../cmponents/SucesssPopupDialog.js';
+import SuccessDialog  from '../../components/SucesssPopupDialog.js';
 import FailedDialog  from '../../components/FailedPopupDialog.js';
 import { BASE_URL } from '../Api';
 import {getCredential}   from '../../../utils/Storage.js';

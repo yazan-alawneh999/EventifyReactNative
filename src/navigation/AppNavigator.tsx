@@ -62,7 +62,7 @@ export default function AppNavigator() {
         name="RootHomeScreen"
         component={NavigatorForUser}
         options={{headerShown: false}}
-      />{' '}
+      />
       <Stack.Screen
         name="PayPalScreen"
         component={PayPal}

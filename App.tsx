@@ -7,8 +7,8 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <UserProvider>
-        {/* <AppNavigator /> */}
-        <NavigatorForOrganizer />{' '}
+         <AppNavigator />
+        {/*<NavigatorForOrganizer />{' '}*/}
       </UserProvider>
     </NavigationContainer>
   );

@@ -203,7 +203,7 @@ const EditProfileScreen = ({ navigation }) => {
                             source={
                                 profileImage?.uri
                                     ? { uri: profileImage.uri }
-                                    : require('../../assets/Images/SmallLogo.png')
+                                    : '../../assets/Images/SmallLogo.png'
                             }
                             style={styles.profileImage}
                         />
