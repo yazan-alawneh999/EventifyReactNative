@@ -1,5 +1,3 @@
-import {ScanScreen} from "../screens/QRCode/ScanScreen.tsx";
-
 export type RootStackParamList = {
   RootSplashScreen: undefined;
   RootOnboardingScreen1: undefined;
@@ -11,5 +9,14 @@ export type RootStackParamList = {
   Signup: undefined;
   Signin: undefined;
   PayPalScreen: undefined;
-  ScanScreen: undefined;
+  AllEventAttendanceScreen: undefined;
+  AllDiscountsScreen: undefined;
+  AddNewDiscountScreen: undefined;
+  ShowProfile: undefined;
+  EditProfile: undefined;
+  CreateProfile: undefined;
+  BuyTicket: undefined;
+  TicketInfoScreen: undefined;
+  AllTicktsScreen: undefined;
+  UserDiscountsScreen: undefined;
 };

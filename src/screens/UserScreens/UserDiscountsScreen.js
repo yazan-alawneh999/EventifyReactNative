@@ -15,17 +15,19 @@ Image,
 } from 'react-native';
 import BottomNavBar from '../../components/BottomNavbarForUser.tsx';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {BASE_URL} from '../Api.tsx';
+import {BASE_URL} from '../../utils/api';
 import {getCredential}   from '../../../utils/Storage.js';
+
 
 const screenHeight = Dimensions.get('window').height;
 
 
 
-const AllTicketsList = ({navigationToTicket,dataList})=>{
+const AllDiscountsList = ({DiscountsList})=>{
+
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity  onPress={()=>{navigationToTicket.navigate('TicketInfoScreen',{ticketid:item.ticketid})}}>
+        <TouchableOpacity  onPress={()=>{}}>
         <View  style={styles.card}>
           <View style={styles.row}>
 
@@ -35,15 +37,13 @@ const AllTicketsList = ({navigationToTicket,dataList})=>{
 
 
             <View style={styles.cardContent}>
+            <Text style={styles.name}>Code: {item.discountcode}</Text>
 
-              <Text style={styles.name}>{item.eventname}</Text>
+            <Text style={styles.infoText}>Number: {item.discountid}</Text>
 
-              <Text style={styles.infoText}>Type: {item.tickettype}</Text>
-
-              <Text style={styles.infoText}>Number: {item.ticketid}</Text>
 
               <View style={styles.tagContainer}>
-                    <Text style={styles.tagText}> {item.purchasedat ? new Date(item.purchasedat).toLocaleDateString() : ''}</Text>
+                    <Text style={styles.tagText}>Amount:{item.discountamount}</Text>
               </View>
 
 
@@ -55,11 +55,11 @@ const AllTicketsList = ({navigationToTicket,dataList})=>{
 
 
 
-      return (
+    return (
     <View >
     <FlatList
-      data={dataList}
-      keyExtractor={(item) => item.ticketid}
+      data={DiscountsList}
+      keyExtractor={(item) => item.discountid}
       renderItem={renderItem}
       contentContainerStyle={styles.flatListContainer}
     />
@@ -68,56 +68,42 @@ const AllTicketsList = ({navigationToTicket,dataList})=>{
 };
 
 
-const EmptyListComponent = ({navigation})=>{
+const EmptyListComponent = ()=>{
 return(
         <View style={styles.NotFountcontainer}>
             <Ionicons name="alert-circle" size={150} color="#546cfc"/>
-            <Text style={styles.notFountText}>Don't have a Ticket yet?</Text>
-
-            {/* //Todo Navigate To All Events */}
-            {/* navigation.navigate('AllEvents') */}
-            <TouchableOpacity style={styles.EditProfileButton} onPress={() => {navigation.navigate('Home')}}>
-                <View style={styles.NotFoundbuttonContainer}>
-                    <Text style={styles.NotFoundButtonText}>Get Your Ticket Now!</Text>
-                    <View style={styles.ArrowIconContainer}>
-                        <Ionicons name="arrow-forward" size={24} color="#fff" />
-                    </View>
-                </View>
-            </TouchableOpacity>
+            <Text style={styles.notFountText}>There is No Discounts yet</Text>
         </View>
     );
 };
 
 
-const UserTicketScreen = ({navigation}) => {
-    const [ticketList,setTicketList] = useState(null);
+const UserDiscountsScreen = ({navigation}) => {
+    const [DiscountsList,setDiscountsList] = useState(null);
 
-        const [userId,setUserId] = useState();
+         const [userId,setUserId] = useState();
 
-
-
-          const getUserIdAndData = async () => {
-              const credentials = await getCredential();
-              setUserId(credentials.userId);
-            };
-            useEffect(() => {
-              getUserIdAndData();
-            }, []);
-
-
+                  const getUserIdAndData = async () => {
+                      const credentials = await getCredential();
+                      setUserId(credentials.userId);
+                    };
+                
+                    useEffect(() => {
+                      getUserIdAndData();
+                    }, []);
         useEffect(() => {
-            getAllTickets({ userID: userId });
+            getDiscountsList(userId);
         },[userId]);
 
 
-    const getAllTickets = async ({userID }) =>{
+    const getDiscountsList = async (userID) =>{
         try {
-          const response = await axios.get(`${BASE_URL}/api/BuyTicket/GetAllTicketsByUserID/${userID}`);
+          const response = await axios.get(`${BASE_URL}/api/Discount/GetDiscountsByUserID/${userID}`);
           const data = response.data;
-          setTicketList(data);
+          setDiscountsList(data);
 
         } catch (error) {
-            alert('failed To bring Ticket.');
+            alert('failed To bring Discounts List.');
         }
       };
 
@@ -133,12 +119,12 @@ return (
                     <TouchableOpacity onPress={()=>navigation.goBack()}>
                         <Ionicons name="arrow-back" size={24} color="black"/>
                     </TouchableOpacity>
-                    <Text style={styles.headerText}>User Tickets</Text>
+                    <Text style={styles.headerText}>Discounts</Text>
                 </View>
 
-                {ticketList?.length > 0 ?
-                 <AllTicketsList navigationToTicket={navigation}  dataList ={ticketList} /> :
-                 <EmptyListComponent navigationToTicket={navigation} />
+                {DiscountsList?.length > 0  ?
+                 <AllDiscountsList  DiscountsList ={DiscountsList} /> :
+                 <EmptyListComponent />
                  }
 
             </View>
@@ -164,14 +150,14 @@ const styles = StyleSheet.create({
     },
 
     header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
     },
 
     headerText: {
         fontSize: 18,
-        marginLeft:'30%',
+        marginLeft: '33%',
     },
 
 
@@ -294,4 +280,4 @@ const styles = StyleSheet.create({
         },
 });
 
-export default UserTicketScreen;
+export default UserDiscountsScreen;

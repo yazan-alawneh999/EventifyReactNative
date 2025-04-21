@@ -13,8 +13,9 @@ TouchableOpacity,
 Dimensions,
 Image,
 } from 'react-native';
-import BottomNavBar from '../../components/BottomNavBarScreen.js';
+import BottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {BASE_URL} from '../../utils/api';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -87,7 +88,7 @@ const AllEventAttendanceScreen = ({navigation}) => {
 
     const getAttindanceList = async ({evID}) =>{
         try {
-          const response = await axios.get(`https://18de-92-241-35-216.ngrok-free.app/api/Reports/GetAttendanceList/${evID}`);
+          const response = await axios.get(`${BASE_URL}/api/Reports/GetAttendanceList/${evID}`);
           const data = response.data;
           setattindanceList(data);
 

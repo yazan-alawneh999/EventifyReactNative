@@ -7,14 +7,27 @@ import OnboardingScreen2 from '../screens/onboradingScreenAndSplash/Onboarding2'
 import OnboardingScreen3 from '../screens/onboradingScreenAndSplash/Onboarding3';
 import SigninScreen from '../screens/LoginSigninScreens/signinScreen';
 import SignupScreen from '../screens/LoginSigninScreens/signupScreen';
-import AppNavigatorForUser from './AppNavigatorUser';
-import {PayPal} from "../screens/PayPalScreen/PayPal";
-import {ScanScreen} from "../screens/QRCode/ScanScreen.tsx";
+import {PayPal} from '../screens/PayPalScreen/PayPal';
+import NavigatorForUser from './NavigatorOrganizer';
+
+import ShowProfileScreen from '../screens/SharedScreens/ShowProfileScreen.js';
+import EditProfileScreen from '../screens/SharedScreens/EditProfileScereen.js';
+import CreateProfileScreen from '../screens/SharedScreens/CreateProfileScreen.js';
+
+import AllEventAttendanceScreen from '../screens/OrganizerScreens/AllEventAttendanceScreen.js';
+import AllDiscountsScreen from '../screens/OrganizerScreens/GetAllDiscountsScreen.js';
+import AddNewDiscountScreen from '../screens/OrganizerScreens/AddNewDiscountScreen.js';
+
+import BuyTicketScreen from '../screens/UserScreens/BuyticketScreen.js';
+import TicketInfoScreen from '../screens/UserScreens/TicketInformationScreen.js';
+import UserTicketScreen from '../screens/UserScreens/UserTicketsScreen.js';
+import UserDiscountsScreen from '../screens/UserScreens/UserDiscountsScreen.js';
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
   return (
-    <Stack.Navigator initialRouteName="ScanScreen">
+    <Stack.Navigator initialRouteName="RootSplashScreen">
       <Stack.Screen
         name="RootSplashScreen"
         component={SplashScreen}
@@ -47,17 +60,62 @@ export default function AppNavigator() {
       />
       <Stack.Screen
         name="RootHomeScreen"
-        component={AppNavigatorForUser}
+        component={NavigatorForUser}
         options={{headerShown: false}}
-      />
-        <Stack.Screen
+      />{' '}
+      <Stack.Screen
         name="PayPalScreen"
         component={PayPal}
         options={{headerShown: false}}
       />
-        <Stack.Screen
-        name="ScanScreen"
-        component={ScanScreen}
+      <Stack.Screen
+        name="AllEventAttendanceScreen"
+        component={AllEventAttendanceScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="AllDiscountsScreen"
+        component={AllDiscountsScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="AddNewDiscountScreen"
+        component={AddNewDiscountScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="ShowProfile"
+        component={ShowProfileScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="CreateProfile"
+        component={CreateProfileScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="BuyTicket"
+        component={BuyTicketScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="TicketInfoScreen"
+        component={TicketInfoScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="AllTicktsScreen"
+        component={UserTicketScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="UserDiscountsScreen"
+        component={UserDiscountsScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
