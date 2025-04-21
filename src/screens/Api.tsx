@@ -12,10 +12,15 @@ const fetchUser = async () => {
     }
 };*/
 import axios from 'axios';
-import {getCredential}   from "../../utils/Storage";
+import {getCredential, logout} from "../../utils/Storage";
+import {Alert} from "react-native";
+import {createNavigationContainerRef} from "@react-navigation/native";
+import {RootStackParamList} from "../navigation/RootStackParamList.ts";
+
+
 
 export const BASE_URL = "https://e268-37-123-83-25.ngrok-free.app";
-
+const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 export const api =  axios.create({
     baseURL: BASE_URL,
@@ -38,5 +43,28 @@ api.interceptors.request.use(
     }
 );
 
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        if (
+            error.response &&
+            error.response.status === 401 &&
+            (await getCredential())?.token
+        ) {
+            // Show message to user (e.g., toast or alert)
+            Alert.alert('Your session has expired. Please log in again.');
+
+            // Optional: clear storage and redirect to login
+            await logout(); // you define this to clear storage/session
+            if (navigationRef.isReady()) {
+                navigationRef.navigate('Signin'); // 👈 Your login screen route name
+            }
+        }
+
+        return Promise.reject(error);
+    }
+);
+
+export default api;
 
 

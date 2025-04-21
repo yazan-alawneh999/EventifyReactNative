@@ -38,7 +38,7 @@ return(
 
 
         <Image
-        source={ proilePic === '../../assets/images/imagesError.png' ? require('../../assets/images/imagesError.png') : { uri: proilePic }}
+        // source={ proilePic === '../../assets/images/imagesError.png' ? require('../../assets/Images/imagesError.png') : { uri: proilePic }}
         style={styles.avatar}
         />
 

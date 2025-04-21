@@ -89,6 +89,7 @@ export default function SigninScreen({navigation}) {
     return Object.keys(error).length === 0;
   };
 
+
   const handleLogin = async () => {
     setIsLoading(true);
     if (!validateInputs()) {
@@ -115,6 +116,7 @@ export default function SigninScreen({navigation}) {
       console.log("Username:", userName, "Password:", pass);
       console.log("✅ Login Success", response.data);
       await storeCredential(response.data);
+
       navigation.popTo('RootHomeScreen');
       navigation.dispatch(
           CommonActions.reset({

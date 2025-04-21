@@ -29,7 +29,7 @@ export class PayPal extends React.Component {
                   onRequestClose={() => this.setState({showModal: false})}>
                   <WebView
                       source={{
-                          uri: `https://f670-37-123-83-25.ngrok-free.app?amount=${this.amount}`,
+                          uri: `https://f670-37-123-83-25.ngrok-free.app/pay?amount=${this.amount}`,
                       }}
                       // source={{ uri: "https://ccf6-37-123-83-25.ngrok-free.app"}}
                       onNavigationStateChange={data => this.handleResponse(data)}

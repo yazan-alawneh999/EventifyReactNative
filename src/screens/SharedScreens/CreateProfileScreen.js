@@ -171,11 +171,11 @@ return (
 
             <View style={styles.profileImageContainer}>
               <Image
-                source={
-                  profileImage?.uri
-                    ? { uri: profileImage.uri }
-                    : require('../../assets/images/SmallLogo.png')
-                }
+                // source={
+                //   profileImage?.uri
+                //     ? { uri: profileImage.uri }
+                //     : require('../../assets/images/SmallLogo.png')
+                // }
                 style={styles.profileImage}
               />
               <TouchableOpacity style={styles.editIcon} onPress={handleSelectImage}>
