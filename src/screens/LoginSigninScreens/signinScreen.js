@@ -14,7 +14,6 @@ import {
 
 import axios from 'axios';
 import {getCredential, storeCredential} from '../../../utils/Storage';
-// import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import Icon from 'react-native-vector-icons/Ionicons';
 import {CommonActions} from '@react-navigation/native';
 import TextInput from '@react-native-material/core/src/TextInput';
@@ -45,7 +44,7 @@ const SignUpLink = ({navigation}) => {
   );
 };
 
-export default function SigninScreen({navigation}) {
+export default  SigninScreen({navigation}) {
   const [userName, setUserName] = useState('');
   const [pass, setPass] = useState('');
   const [errors, setErrors] = useState({});
@@ -355,4 +354,4 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
-});
+});};
