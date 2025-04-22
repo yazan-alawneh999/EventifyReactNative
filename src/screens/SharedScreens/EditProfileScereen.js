@@ -21,7 +21,7 @@ import UserBottomNavBar from '../../components/BottomNavbarForUser.tsx';
 import OrgBottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
 import SuccessDialog from '../../components/SucesssPopupDialog';
 import FailedDialog from '../../components/FailedPopupDialog.js';
-import { BASE_URL } from '../../utils/api';
+import { BASE_URL,api } from '../Api';
 import {getCredential}   from '../../../utils/Storage.js';
 
 const { width, height } = Dimensions.get('window');
@@ -147,8 +147,8 @@ const EditProfileScreen = ({ navigation }) => {
                 formData,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
                         'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );

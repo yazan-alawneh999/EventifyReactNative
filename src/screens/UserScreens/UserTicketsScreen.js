@@ -15,7 +15,7 @@ Image,
 } from 'react-native';
 import BottomNavBar from '../../components/BottomNavbarForUser.tsx';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {BASE_URL} from '../Api.tsx';
+import { BASE_URL,api } from '../Api';
 import {getCredential}   from '../../../utils/Storage.js';
 
 const screenHeight = Dimensions.get('window').height;
@@ -112,7 +112,15 @@ const UserTicketScreen = ({navigation}) => {
 
     const getAllTickets = async ({userID }) =>{
         try {
-          const response = await axios.get(`${BASE_URL}/api/BuyTicket/GetAllTicketsByUserID/${userID}`);
+        const credentials = await getCredential();
+        const token = (await getCredential()).token;
+        setUserId(credentials.userId);
+          const response = await axios.get(`${BASE_URL}/api/BuyTicket/GetAllTicketsByUserID/${userID}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
           const data = response.data;
           setTicketList(data);
 

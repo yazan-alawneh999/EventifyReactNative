@@ -14,13 +14,13 @@ const {width} = Dimensions.get('window');
 
 const BottomNavBar = () => {
   const route = useRoute();
-  const navigation = useNavigation<any>(); // Use 'any' type for navigation
+  const navigation = useNavigation<any>();
 
   const icons = [
     {name: 'home', screen: 'Home'},
     {name: 'calendar', screen: 'Events'},
     {name: 'map-pin', screen: 'Map'},
-    {name: 'user', screen: 'user'},
+    {name: 'user', screen: 'ShowProfile'},
   ];
 
   return (
