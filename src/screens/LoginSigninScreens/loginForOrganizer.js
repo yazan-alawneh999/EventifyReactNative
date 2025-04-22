@@ -91,7 +91,7 @@ const OrganizerSigninScreen = ({navigation}) => {
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
-          routes: [{name: 'OrganizerHome'}], // غيّر اسم الشاشة إذا كانت مختلفة
+          routes: [{name: 'list'}],
         }),
       );
     } catch (error) {

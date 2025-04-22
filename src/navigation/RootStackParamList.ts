@@ -16,7 +16,8 @@ export type RootStackParamList = {
   list: undefined;
   fileplus: undefined;
   ShowProfileScreen: undefined;
+  NavigatorForUser: undefined;
   EditEvent: {eventId: string};
-  LoginMainRoleScreen: undefined;
+  LoginMainRole: undefined;
   OrganizerSigninScreen: undefined;
 };

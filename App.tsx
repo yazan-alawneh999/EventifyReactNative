@@ -6,8 +6,8 @@ import NavigatorForOrganizer from './src/navigation/NavigatorOrganizer';
 function App(): React.JSX.Element {
   return (
     <NavigationContainer>
-      {/* <AppNavigator /> */}
-      <NavigatorForOrganizer />
+      <AppNavigator />
+      {/* <NavigatorForOrganizer /> */}
     </NavigationContainer>
   );
 }

@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   StatusBar,
   Alert,
+  // TextInput,
 } from 'react-native';
 
 import axios from 'axios';
@@ -30,6 +31,7 @@ const LogoElement = () => {
     </View>
   );
 };
+const myIcon = <Icon name="rocket" size={30} color="#900" />;
 
 const SignUpLink = ({navigation}) => {
   return (
@@ -51,6 +53,25 @@ const SigninScreen = ({navigation}) => {
   const [errorLogin, setErrorLogin] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  // useEffect(() => {
+  //     const checkCredential = async () => {
+  //         const credentials = await getCredential();
+  //         if (credentials?.token) {
+  //             navigation.reset({
+  //                 index: 0,
+  //                 routes: [{ name: 'RootHomeScreen' }],
+  //             });
+  //         } else {
+  //             navigation.reset({
+  //                 index: 0,
+  //                 routes: [{ name: 'Signin' }],
+  //             });
+  //         }
+  //     };
+  //
+  //     checkCredential();
+  // }, []);
+
   const validateInputs = () => {
     let error = {};
     if (!userName) {
@@ -70,7 +91,6 @@ const SigninScreen = ({navigation}) => {
       setIsLoading(false);
       return;
     }
-
     try {
       const response = await api.post(
         `${BASE_URL}/api/event-manager/auth/login`,
@@ -79,14 +99,24 @@ const SigninScreen = ({navigation}) => {
           password: pass,
         },
       );
+      console.log(response.data);
+      // const response = await axios.post(
+      //     "https://db03-37-123-66-6.ngrok-free.app/api/event-manager/auth/login",
+      //     {
+      //       username: userName,
+      //       password: pass,
+      //     }
+      // );
 
+      console.log('Username:', userName, 'Password:', pass);
       console.log('✅ Login Success', response.data);
       await storeCredential(response.data);
-      navigation.popTo('list');
+      navigation.popTo('NavigatorForUser');
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
-          routes: [{name: 'list'}],
+          // routes: [{name: 'RootHomeScreen'}],
+          routes: [{name: 'NavigatorForUser'}],
         }),
       );
     } catch (error) {
@@ -94,15 +124,14 @@ const SigninScreen = ({navigation}) => {
       if (error.response) {
         console.log('Server Response', error.response.data);
       }
-
       if (!error.response) {
         setErrorLogin('Network error or no response from server');
         return;
       }
-
+      // Fix: error.status doesn't exist — should be error.response?.status
       switch (error.response.status) {
         case 401:
-          setErrorLogin('Unauthorized');
+          setErrorLogin('UnAuthorized');
           break;
         default:
           setErrorLogin('Unknown error');
@@ -114,6 +143,7 @@ const SigninScreen = ({navigation}) => {
 
   useEffect(() => {
     if (errorLogin) {
+      console.log('⚠️ Showing alert with error:', errorLogin); // Debug log
       Alert.alert('Login Error', errorLogin, [
         {
           text: 'Ok',
@@ -137,15 +167,9 @@ const SigninScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      {/* Back Button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}>
-        <Icon name="arrow-back" size={24} color="#333" />
-      </TouchableOpacity>
-
       <LogoElement />
       <TextInput
+        // style={styles.input}
         label={'User Name'}
         variant="outlined"
         value={userName}
@@ -155,8 +179,8 @@ const SigninScreen = ({navigation}) => {
       {errors.username ? (
         <Text style={styles.errorText}>{errors.username}</Text>
       ) : null}
-
       <TextInput
+        // style={styles.input}
         label={'Password'}
         variant="outlined"
         value={pass}
@@ -184,7 +208,7 @@ const SigninScreen = ({navigation}) => {
       <Button
         style={styles.signInButton}
         title={'Login'}
-        onPress={handleLogin}
+        onPress={() => handleLogin()}
       />
 
       <SignUpLink navigation={navigation} />
@@ -192,14 +216,13 @@ const SigninScreen = ({navigation}) => {
   );
 };
 
-export default SigninScreen;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     gap: 16,
     padding: 8,
     justifyContent: 'center',
+
     backgroundColor: 'white',
     height: '100%',
     width: '100%',
@@ -207,15 +230,57 @@ const styles = StyleSheet.create({
   logoContainer: {
     display: 'flex',
     alignSelf: 'center',
+    // marginHorizontal: 'auto',
     marginTop: 100,
+
     width: 200,
     height: 120,
   },
   logoPic: {
     width: '100%',
-    height: 50,
+    height: '50',
     alignSelf: 'center',
     marginTop: 40,
+  },
+  signinContainer: {
+    marginHorizontal: '5%',
+    height: '30%',
+    marginTop: '20%',
+  },
+  titleFont: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    marginBottom: '2%',
+  },
+  inputContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignContent: 'center',
+    borderWidth: 2,
+    borderColor: 'lightgray',
+    borderRadius: 16,
+    height: '25%',
+    marginBlock: '2%',
+  },
+  // input: {
+  //   fontSize: 16,
+  //   color: '#333',
+  //   width: '75%',
+  // },
+  icon: {
+    width: '10%',
+    height: '75%',
+    marginTop: '2%',
+    marginStart: '2%',
+  },
+  toggleIconContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    width: '10%',
+  },
+  toggleIcon: {
+    width: '80%',
+    height: '30%',
   },
   signInButton: {
     flexDirection: 'row',
@@ -225,15 +290,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+    marginEnd: '10%',
     height: 'auto',
     marginTop: '15%',
+  },
+  signInButtonText: {
+    width: '50%',
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginStart: '15%',
+  },
+  ArrowIconContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '14%',
+    height: '60%',
+    backgroundColor: '#495eed',
+    borderRadius: '50%',
+  },
+  ArrowIcon: {
+    width: '65%',
+    height: '50%',
   },
   signUplinkContainer: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     height: '5%',
-    width: '100%',
+    widht: '100%',
     marginTop: '45%',
   },
   linkText: {
@@ -244,6 +331,7 @@ const styles = StyleSheet.create({
     color: 'red',
     marginBottom: 10,
   },
+
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -251,14 +339,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     paddingTop: StatusBar.currentHeight,
   },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    zIndex: 10,
-    backgroundColor: '#f0f0f0',
-    padding: 8,
-    borderRadius: 50,
-    elevation: 2,
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
   },
 });
+
+export default SigninScreen;

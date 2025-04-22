@@ -17,7 +17,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const NavigatorForOrganizer = () => {
   return (
     <Stack.Navigator
-      initialRouteName="LoginMainRoleScreen"
+      initialRouteName="LoginMainRole"
       screenOptions={{headerShown: false}}>
       <Stack.Screen name="list" component={ListEventScreen} />
       <Stack.Screen name="CreateEvent" component={CreatNowEventScreen} />
@@ -36,15 +36,15 @@ const NavigatorForOrganizer = () => {
         options={{headerShown: false, title: 'Signup'}}
       />
       <Stack.Screen
-        name="LoginMainRoleScreen"
+        name="LoginMainRole"
         component={LoginMainRoleScreen}
         options={{headerShown: false}}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="OrganizerSigninScreen"
         component={OrganizerSigninScreen}
         options={{headerShown: false}}
-      /> */}
+      />
     </Stack.Navigator>
   );
 };

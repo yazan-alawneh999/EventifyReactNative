@@ -20,6 +20,7 @@
     "defaults": "^3.0.0",
     "react": "19.0.0",
     "react-native-gesture-handler": "^2.25.0",
+    "react-native-image-picker": "^8.2.0",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-maps": "^1.22.5",
     "react-native-modal-datetime-picker": "^18.0.0",
