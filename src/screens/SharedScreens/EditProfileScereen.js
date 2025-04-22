@@ -122,6 +122,7 @@ const EditProfileScreen = ({ navigation }) => {
     const UpdateProfile = async () => {
         try {
             const credentials = await getCredential();
+            const token = (await getCredential()).token;
             const formData = new FormData();
             formData.append('FirstName', firstName);
             formData.append('LastName', lastName);
@@ -143,15 +144,14 @@ const EditProfileScreen = ({ navigation }) => {
             }
 
             const response = await axios.put(
-                `${BASE_URL}/api/event-manager/admin-dashboard/UpdateProfile/${credentials.userId}`,
+               `${BASE_URL}/api/event-manager/admin-dashboard/UpdateProfile/${credentials.userId}`,
+                formData,
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data',
-                        Authorization: `Bearer ${credentials.token}`,
+                        Authorization: `Bearer ${token}`,
                     },
-                },
-                formData
-
+                }
             );
 
             if (response.status === 200 || response.status === 201) {
