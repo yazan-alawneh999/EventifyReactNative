@@ -22,25 +22,28 @@ export const getCredential = async () => {
 };
 
 export const getRole = async () => {
-    try {
-        const token = (await getCredential()).token;
-        const decoded = jwtDecode(token);
-        return decoded.role || null;
-    } catch (e) {
-        console.error('Error decoding token:', e);
-        return null;
+    const creds = await getCredential();
+    if (creds?.token) {
+        try {
+            const decoded = jwtDecode(creds.token);
+            console.log('📦 Decoded JWT:', decoded);
+
+            const roleKey = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+            return decoded[roleKey] || null;
+        } catch (err) {
+            console.log('❌ JWT Decode Error:', err.message);
+            return null;
+        }
     }
+    return null;
 };
 
 export const isOrganizer = async () => {
-    try {
-        const role = await getRole();
-        return role === 2;
-    } catch (e) {
-        console.error('Error checking organizer role:', e);
-        return false;
-    }
+    const role = await getRole();
+    return role === "2";
 };
+
+
 
 export const logout = async () => {
     try {

@@ -14,7 +14,7 @@ import {
 import UserBottomNavBar from '../../components/BottomNavbarForUser.tsx';
 import OrgBottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {BASE_URL} from '../../utils/api';
+import {BASE_URL} from '../Api';
 import {getCredential, logout} from '../../../utils/Storage.js';
 
 const ProfilNotExists = ({navigation}) => {
@@ -154,10 +154,16 @@ const ProfileScreen = ({navigation}) => {
     getUserIdAndData();
   }, []);
 
-  const getProfileData = async userID => {
+  const getProfileData = async UserID => {
     try {
+      const token = (await getCredential()).token;
       const response = await axios.get(
-        `${BASE_URL}/api/event-manager/profile-details/${userID}`,
+        `${BASE_URL}/api/event-manager/profile-details/${UserID}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
       const data = response.data;
       setFirstName(data.firstName);

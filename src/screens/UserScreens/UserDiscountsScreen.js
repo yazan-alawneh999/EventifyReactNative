@@ -15,7 +15,7 @@ Image,
 } from 'react-native';
 import BottomNavBar from '../../components/BottomNavbarForUser.tsx';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {BASE_URL} from '../../utils/api';
+import { BASE_URL,api } from '../Api';
 import {getCredential}   from '../../../utils/Storage.js';
 
 
@@ -98,7 +98,7 @@ const UserDiscountsScreen = ({navigation}) => {
 
     const getDiscountsList = async (userID) =>{
         try {
-          const response = await axios.get(`${BASE_URL}/api/Discount/GetDiscountsByUserID/${userID}`);
+          const response = await api.get(`${BASE_URL}/api/Discount/GetDiscountsByUserID/${userID}`);
           const data = response.data;
           setDiscountsList(data);
 

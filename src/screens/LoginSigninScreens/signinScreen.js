@@ -19,9 +19,11 @@ import Button from '@react-native-material/core/src/Button';
 import {api, BASE_URL} from '../Api';
 import {
   getCredential,
+  getRole,
   isOrganizer,
   storeCredential,
 } from '../../../utils/Storage';
+import axios from 'axios';
 
 const LogoElement = () => (
   <View style={styles.logoContainer}>
@@ -74,25 +76,26 @@ const SigninScreen = ({navigation}) => {
         },
       );
 
+      // const response = await axios.post(`https://18b9-109-107-251-55.ngrok-free.app/api/event-manager/auth/login`, {
+      //   username: userName,
+      //   password: pass,
+      // });
+
       console.log('✅ Login Success', response.data);
       await storeCredential(response.data);
 
-      if (await isOrganizer()) {
-        navigation.popTo('list');
+      console.log('isOrganizer', await isOrganizer());
+      console.log('role', await getRole());
+
+      const creds = await getCredential();
+      if (creds?.token) {
+        const isOrg = await isOrganizer();
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [{name: 'list'}],
+            routes: [{name: isOrg ? 'OrgnizerScreens' : 'UserScreens'}],
           }),
-        );
-      } else {
-        navigation.popTo('RootHomeScreen');
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{name: 'RootHomeScreen'}],
-          }),
-        );
+        ); // <-- this closing bracket was missing!
       }
     } catch (error) {
       console.log('❌ Axios Error', error.message);
@@ -112,7 +115,22 @@ const SigninScreen = ({navigation}) => {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    const checkLogin = async () => {
+      const creds = await getCredential();
+      if (creds?.token) {
+        const isOrg = await isOrganizer();
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: isOrg ? 'OrgnizerScreens' : 'UserScreens'}],
+          }),
+        );
+      }
+    };
 
+    checkLogin();
+  }, []);
   useEffect(() => {
     if (errorLogin) {
       Alert.alert('Login Error', errorLogin, [

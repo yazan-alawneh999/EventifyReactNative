@@ -16,9 +16,9 @@ import {Alert} from 'react-native';
 import {createNavigationContainerRef} from '@react-navigation/native';
 import {RootStackParamList} from '../navigation/RootStackParamList.ts';
 
-export const BASE_URL = 'https://282b-149-200-133-207.ngrok-free.app';
+export const BASE_URL = 'https://b12b-37-123-65-107.ngrok-free.app';
 
-const navigationRef = createNavigationContainerRef<RootStackParamList>();
+export const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -29,10 +29,18 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   async config => {
-    const token = (await getCredential()).token;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const creds = await getCredential();
+      if (creds?.token) {
+        config.headers.Authorization = `Bearer ${creds.token}`;
+        console.log('[Interceptor] Token added:', creds.token);
+      } else {
+        console.log('[Interceptor] No token found');
+      }
+    } catch (e) {
+      console.error('[Interceptor] Error getting credentials', e);
     }
+
     return config;
   },
   error => {
@@ -51,10 +59,9 @@ api.interceptors.response.use(
       // Show message to user (e.g., toast or alert)
       Alert.alert('Your session has expired. Please log in again.');
 
-      // Optional: clear storage and redirect to login
-      await logout(); // you define this to clear storage/session
+      await logout();
       if (navigationRef.isReady()) {
-        navigationRef.navigate('Signin'); // 👈 Your login screen route name
+        navigationRef.navigate('Signin');
       }
     }
 
@@ -62,4 +69,17 @@ api.interceptors.response.use(
   },
 );
 
-export default api;
+api.interceptors.request.use(async config => {
+  console.log('[Request Interceptor]', config.url);
+  return config;
+});
+api.interceptors.response.use(
+  response => {
+    console.log('[Response Interceptor]', response.status);
+    return response;
+  },
+  error => {
+    console.error('[Response Error]', error);
+    return Promise.reject(error);
+  },
+);

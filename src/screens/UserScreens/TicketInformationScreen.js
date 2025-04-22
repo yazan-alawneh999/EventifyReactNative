@@ -13,7 +13,7 @@ import { View,
 import BottomNavBar from '../../components/BottomNavbarForUser.tsx';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import QRCode from 'react-native-qrcode-svg';
-import {BASE_URL} from '../../utils/api';
+import { BASE_URL,api } from '../Api';
 
 
 
@@ -25,7 +25,7 @@ const TicketInformationScreen = ({route,navigation}) => {
 
 const getTicketInfo = async(ticketID)=>{
         try {
-            const response = await axios.get(`${BASE_URL}/api/BuyTicket/GetAllTicketsByTicketId/${ticketID}`);
+            const response = await api.get(`${BASE_URL}/api/BuyTicket/GetAllTicketsByTicketId/${ticketID}`);
             SetTicketInfo(response.data);
 
 

@@ -22,7 +22,7 @@ import BottomNavBar from '../../components/BottomNavBarScreen.js';
 import SuccessDialog from '../../components/SucesssPopupDialog';
 import FailedDialog from '../../components/FailedPopupDialog.js';
 import {getCredential}   from '../../../utils/Storage.js';
-import { BASE_URL } from '../../utils/api';
+import { BASE_URL ,api} from '../Api';
 
 
 
@@ -77,13 +77,13 @@ const CreateProfileScreen = ({navigation}) => {
       try {
         const token = (await getCredential()).token;
 
-        const response = await axios.get(
+        const response = await api.get(
           `${BASE_URL}/api/event-manager/profile-details/${uID}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          // {
+          //   headers: {
+          //     Authorization: `Bearer ${token}`,
+          //   },
+          // }
         );
 
         const data = response.data;
@@ -120,6 +120,7 @@ const CreateProfileScreen = ({navigation}) => {
 
   const createProfile = async () => {
     try {
+      const token = (await getCredential()).token;
       const formData = new FormData();
       formData.append('FirstName', firstName);
       formData.append('LastName', lastName);
@@ -142,11 +143,12 @@ const CreateProfileScreen = ({navigation}) => {
       }
 
       const response = await axios.post(
-        `https://336d-92-241-35-216.ngrok-free.app/api/event-manager/create-profile/${userId}`,
+        `${BASE_URL}/api/event-manager/create-profile/${userId}`,
         formData,
         {
           headers: {
             'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
           },
         },
       );
@@ -196,14 +198,14 @@ const CreateProfileScreen = ({navigation}) => {
           </View>
 
             <View style={styles.profileImageContainer}>
-            <Image
-  source={
-    profileImage
-      ? { uri: profileImage }
-      : '../../assets/Images/SmallLogo.png'
-  }
+            {/* <Image
+  // source={
+  //   profileImage
+  //     ? { uri: profileImage }
+  //     : '../../assets/Images/SmallLogo.png'
+  // }
   style={styles.profileImage}
-/>
+/> */}
               <TouchableOpacity style={styles.editIcon} onPress={handleSelectImage}>
                 <Ionicons name="add" size={35} color="white" />
               </TouchableOpacity>

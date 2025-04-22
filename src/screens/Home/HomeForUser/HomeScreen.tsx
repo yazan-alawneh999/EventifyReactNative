@@ -11,6 +11,8 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 import BottomNavBar from '../../../components/BottomNavbarForUser';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import {logout} from "../../../../utils/Storage";
 
 const categories = [
   {title: 'Sports', color: '#F8634C', icon: 'basketball-outline'},
@@ -28,6 +30,13 @@ const HomeScreen = ({navigation }) => {
   // if (userProfil === null) {
   //   // ui inform user that there is an issue
   // }
+  const handleLogout =  async () => {
+
+    await logout()
+    navigation.navigate('Signin');
+  };
+
+
   return (
     <View style={{flex: 1, backgroundColor: '#f9f9f9'}}>
       <ScrollView contentContainerStyle={{paddingBottom: 80}}>
@@ -38,7 +47,9 @@ const HomeScreen = ({navigation }) => {
               <Text style={styles.locationLabel}>Current Location</Text>
               <Text style={styles.locationValue}>New York, USA </Text>
             </View>
-            <Icon name="notifications-outline" size={24} color="#fff" />
+            <TouchableOpacity onPress={handleLogout}>
+              <Ionicons name="log-out-outline" size={24} color="white" />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.searchBar}>

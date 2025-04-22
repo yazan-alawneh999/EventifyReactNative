@@ -15,7 +15,7 @@ Image,
 } from 'react-native';
 import BottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {BASE_URL} from '../../utils/api';
+import {BASE_URL,api} from  '../Api.tsx';
 import {getCredential}   from "../../utils/Storage";
 const screenHeight = Dimensions.get('window').height;
 
