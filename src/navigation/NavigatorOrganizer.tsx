@@ -7,7 +7,9 @@ import ListEventScreen from '../screens/Home/HomeForOrganizer/ListEventScreen';
 import SignupScreen from '../screens/LoginSigninScreens/signupScreen';
 import {RootStackParamList} from './RootStackParamList';
 import UpdateEventScreen from '../screens/Home/HomeForOrganizer/EditEvent';
-import SigninScreen from '../../screens/signinScreen';
+import SigninScreen from "../screens/LoginSigninScreens/signinScreen";
+import {ScanScreen} from "../screens/QRCode/ScanScreen.tsx";
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -22,6 +24,7 @@ const NavigatorForOrganizer = () => {
       <Stack.Screen name="Map" component={ProfileScreen} />
       <Stack.Screen name="user" component={ProfileScreen} />
       <Stack.Screen name="EditEvent" component={UpdateEventScreen} />
+      <Stack.Screen name="ScanScreen" component={ScanScreen} />
       <Stack.Screen
         name="Signin"
         component={SigninScreen}

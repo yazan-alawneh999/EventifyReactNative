@@ -31,4 +31,5 @@ export type RootStackParamList = {
   OrgnizerScreens: undefined;
   UserScreens: undefined;
   EventDetailsScreen: {eventId: string};
+  ScanScreen:undefined;
 };

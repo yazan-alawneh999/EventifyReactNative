@@ -88,7 +88,7 @@ const SigninScreen = ({navigation}) => {
       console.log('role', await getRole());
 
       const creds = await getCredential();
-      if (creds?.token) {
+      if (response.data) {
         const isOrg = await isOrganizer();
         navigation.dispatch(
           CommonActions.reset({
