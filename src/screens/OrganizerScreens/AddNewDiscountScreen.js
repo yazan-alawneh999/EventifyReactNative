@@ -18,7 +18,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import BottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
 import SuccessDialog from '../../components/SucesssPopupDialog';
 import FailedDialog from '../../components/FailedPopupDialog.js';
-import {BASE_URL} from '../Api.tsx';
+import {BASE_URL,api} from '../Api.tsx';
 import {getCredential}   from '../../../utils/Storage.js';
 
 const { width, height } = Dimensions.get('window');
@@ -47,10 +47,10 @@ const CreateProfileScreen = ({navigation}) => {
 
 const createDiscount = async () => {
     try {
-      const response = await axios.post(
+      const response = await api.post(
         `${BASE_URL}/api/Discount/AddDiscount`,
         {
-            userid: 22,
+            userid: userId,
             discountcode: DiscountCode,
             discountamount:DiscountAmount,
           }
