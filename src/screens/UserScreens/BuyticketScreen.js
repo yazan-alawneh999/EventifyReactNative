@@ -42,7 +42,7 @@ export default function TicketInfoScreen({ route,navigation }) {
   const [status, setStatus] = useState('Pending');
 
   const handleResponse = (data) => {
-
+      BuyTicket();
         if (data.title === 'success') {
         
         setShowModal(false);

@@ -21,12 +21,14 @@ const TicketInformationScreen = ({route,navigation}) => {
     const [TicketInfo,SetTicketInfo] = useState({});
     const [PreviewQR,SetPreviewQR]=useState(false);
     const {ticketid}  = route.params;
-    const qrValue = TicketInfo.qrCode;
+    const [qrValue,SetQrValue]=useState('a');
+    
 
 const getTicketInfo = async(ticketID)=>{
         try {
             const response = await api.get(`${BASE_URL}/api/BuyTicket/GetAllTicketsByTicketId/${ticketID}`);
             SetTicketInfo(response.data);
+            SetQrValue(response.data.qrCode);
 
 
             if(response.status === 201 || response.status === 200){
@@ -39,7 +41,7 @@ const getTicketInfo = async(ticketID)=>{
     };
 
     useEffect(() => {
-        getTicketInfo(ticketid );
+        getTicketInfo(ticketid);
     },[ticketid]);
 
 return (
@@ -80,17 +82,17 @@ return (
                     </View>
 
             {PreviewQR ? ( <View style={styles.qrContainer}>
-                {TicketInfo.qrCode ? (
+                {qrValue||'a' ? (
                     <>
                         {(() => {
                             try {
-                                return <QRCode value={String(TicketInfo.qrCode)} size={180} />;
+                                return <QRCode value={String(qrValue) || 'a'} size={180} />;
                             } catch (error) {
                                 console.error("QR Code render error:", error);
                                 return <Text>Failed to generate QR</Text>;
                             }
                         })()}
-                        <Text style={styles.qrCode}>{TicketInfo.qrCode}</Text>
+                        <Text style={styles.qrCode}>{qrValue}</Text>
                     </>
                 ) : (
                   <Text>QR Code not available</Text>

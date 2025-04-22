@@ -21,7 +21,7 @@ import UserBottomNavBar from '../../components/BottomNavbarForUser.tsx';
 import OrgBottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
 import SuccessDialog from '../../components/SucesssPopupDialog';
 import FailedDialog from '../../components/FailedPopupDialog.js';
-import { BASE_URL,api } from '../Api';
+import { BASE_URL } from '../Api';
 import {getCredential}   from '../../../utils/Storage.js';
 
 const { width, height } = Dimensions.get('window');
@@ -121,7 +121,7 @@ const EditProfileScreen = ({ navigation }) => {
 
     const UpdateProfile = async () => {
         try {
-            const token = (await getCredential()).token;
+            const credentials = await getCredential();
             const formData = new FormData();
             formData.append('FirstName', firstName);
             formData.append('LastName', lastName);
@@ -143,14 +143,15 @@ const EditProfileScreen = ({ navigation }) => {
             }
 
             const response = await axios.put(
-                `${BASE_URL}/api/event-manager/admin-dashboard/UpdateProfile/${userId}`,
-                formData,
+                `${BASE_URL}/api/event-manager/admin-dashboard/UpdateProfile/${credentials.userId}`,
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data',
-                        Authorization: `Bearer ${token}`,
+                        Authorization: `Bearer ${credentials.token}`,
                     },
-                }
+                },
+                formData
+
             );
 
             if (response.status === 200 || response.status === 201) {
