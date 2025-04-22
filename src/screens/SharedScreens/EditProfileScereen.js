@@ -17,9 +17,12 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { launchImageLibrary } from 'react-native-image-picker';
-import BottomNavBar from '../../components/BottomNavBarScreen.js';
+import UserBottomNavBar from '../../components/BottomNavbarForUser.tsx';
+import OrgBottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
 import SuccessDialog from '../../components/SucesssPopupDialog';
 import FailedDialog from '../../components/FailedPopupDialog.js';
+import { BASE_URL } from '../../utils/api';
+import {getCredential}   from '../../../utils/Storage.js';
 
 const { width, height } = Dimensions.get('window');
 
@@ -35,6 +38,7 @@ const EditProfileScreen = ({ navigation }) => {
     const [savedFailed, setSavedFailed] = useState(false);
     const [RoleID, setRoleID] = useState();
     const [userNamr, setUserName] = useState();
+    const [userId,setUserId] = useState();
 
     const isFormValid = () => {
         return (
@@ -48,15 +52,34 @@ const EditProfileScreen = ({ navigation }) => {
         );
     };
 
-    const userId = 62;
 
-    useEffect(() => {
-        getProfileData(userId);
-    }, []);
+
+    const getUserIdAndData = async () => {
+        const credentials = await getCredential();
+        setUserId(credentials.userId);
+      };
+
+      useEffect(() => {
+        getUserIdAndData();
+      }, []);
+
+      useEffect(() => {
+        if (userId) {
+          getProfileData(userId);
+        }
+      }, [userId]);
 
     const getProfileData = async (userID) => {
         try {
-            const response = await axios.get(`https://336d-92-241-35-216.ngrok-free.app/api/event-manager/profile-details/${userID}`);
+            const token = (await getCredential()).token;
+            const response = await axios.get(`${BASE_URL}/api/event-manager/profile-details/${userID}`,
+            {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  'Content-Type': 'multipart/form-data',
+                },
+              }
+            );
             const data = response.data;
             setFirstName(data.firstName);
             setLastName(data.lastName);
@@ -64,7 +87,7 @@ const EditProfileScreen = ({ navigation }) => {
             setUserAge(data.age);
             setEmail(data.email);
             setphoneNumber(data.phoneNumber);
-            setProfileImage(data.profileImage != null ? data.profileImage.replace('https://336d-92-241-35-216.ngrok-free.app/images/', '') : '../../assets/images/imagesError.png');
+            setProfileImage(data.profileImage != null ? data.profileImage.replace(`${BASE_URL}/images/`, '') : '../../assets/Images/imagesError.png');
             setRoleID(data.roleID);
             setUserName(data.username);
         }
@@ -98,6 +121,7 @@ const EditProfileScreen = ({ navigation }) => {
 
     const UpdateProfile = async () => {
         try {
+            const token = (await getCredential()).token;
             const formData = new FormData();
             formData.append('FirstName', firstName);
             formData.append('LastName', lastName);
@@ -119,10 +143,11 @@ const EditProfileScreen = ({ navigation }) => {
             }
 
             const response = await axios.put(
-                `https://336d-92-241-35-216.ngrok-free.app/api/event-manager/admin-dashboard/UpdateProfile/${userId}`,
+                `${BASE_URL}/api/event-manager/admin-dashboard/UpdateProfile/${userId}`,
                 formData,
                 {
                     headers: {
+                        Authorization: `Bearer ${token}`,
                         'Content-Type': 'multipart/form-data',
                     },
                 }
@@ -178,7 +203,7 @@ const EditProfileScreen = ({ navigation }) => {
                             source={
                                 profileImage?.uri
                                     ? { uri: profileImage.uri }
-                                    : require('../../assets/images/SmallLogo.png')
+                                    : require('../../assets/Images/SmallLogo.png')
                             }
                             style={styles.profileImage}
                         />
@@ -234,7 +259,7 @@ const EditProfileScreen = ({ navigation }) => {
                         <Text style={styles.saveButtonText}>Save Changes</Text>
                     </TouchableOpacity>
                 </ScrollView>
-                <BottomNavBar navigation={navigation} />
+                { userId === 2 ? (<UserBottomNavBar navigation={navigation}/>) : (<OrgBottomNavBar navigation={navigation}/>)}
             </KeyboardAvoidingView>
         </SafeAreaView>
     );

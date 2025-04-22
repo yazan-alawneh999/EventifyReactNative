@@ -5,6 +5,17 @@ import CreatNowEventScreen from '../screens/Home/HomeForOrganizer/CreateNowEvent
 import ProfileScreen from '../screens/Home/HomeForOrganizer/profileScreen';
 import ListEventScreen from '../screens/Home/HomeForOrganizer/ListEventScreen';
 
+
+import ShowProfileScreen from '../screens/SharedScreens/ShowProfileScreen.js';
+import EditProfileScreen from '../screens/SharedScreens/EditProfileScereen.js';
+import CreateProfileScreen from '../screens/SharedScreens/CreateProfileScreen.js';
+
+import AllEventAttendanceScreen from '../screens/OrganizerScreens/AllEventAttendanceScreen.js';
+import AllDiscountsScreen from '../screens/OrganizerScreens/GetAllDiscountsScreen.js';
+import AddNewDiscountScreen from '../screens/OrganizerScreens/AddNewDiscountScreen.js';
+
+
+
 const Stack = createNativeStackNavigator();
 
 const NavigatorForOrganizer = () => {
@@ -17,6 +28,19 @@ const NavigatorForOrganizer = () => {
       <Stack.Screen name="file-plus" component={CreatNowEventScreen} />
       <Stack.Screen name="Map" component={ProfileScreen} />
       <Stack.Screen name="user" component={ProfileScreen} />
+
+
+      <Stack.Screen name="AllEventAttendanceScreen" component={AllEventAttendanceScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="AllDiscountsScreen" component={AllDiscountsScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="AddNewDiscountScreen" component={AddNewDiscountScreen} options={{ headerShown: false }}/>
+
+
+      <Stack.Screen name="ShowProfile" component={ShowProfileScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="CreateProfile" component={CreateProfileScreen} options={{ headerShown: false }}/>
+
+
+
     </Stack.Navigator>
   );
 };
