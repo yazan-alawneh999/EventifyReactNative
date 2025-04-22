@@ -58,7 +58,7 @@ const createDiscount = async () => {
 
       if (response.status === 200 || response.status === 201) {
         setSavedSuccessfuly(true);
-        navigation.navigate('AllDiscountsScreen');
+        // navigation.navigate('AllDiscountsScreen');
         console.log('Discount saved successfully');
       }
     } catch (error) {
