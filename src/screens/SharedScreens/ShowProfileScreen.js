@@ -45,7 +45,7 @@ return(
 
 
         <Image
-        source={ proilePic === '../../assets/Images/imagesError.png' ? require('../../assets/Images/imagesError.png') : { uri: proilePic }}
+        source={ proilePic === '../../assets/Images/imagesError.png' ? '../../assets/Images/imagesError.png' : { uri: proilePic }}
         style={styles.avatar}
         />
 
@@ -101,7 +101,7 @@ return(
             </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.logoutButton} onPress={()=> 
+        <TouchableOpacity style={styles.logoutButton} onPress={()=>
         {
           handleLogout();
           navigation.navigate('Signin');

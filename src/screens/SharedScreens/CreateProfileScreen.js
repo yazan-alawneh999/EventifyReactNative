@@ -202,7 +202,7 @@ return (
   source={
     profileImage
       ? { uri: profileImage }
-      : require('../../assets/Images/SmallLogo.png')
+      : '../../assets/Images/SmallLogo.png'
   }
   style={styles.profileImage}
 />

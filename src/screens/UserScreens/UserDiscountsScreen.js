@@ -32,7 +32,7 @@ const AllDiscountsList = ({DiscountsList})=>{
           <View style={styles.row}>
 
             <View style={styles.distanceBadge}>
-                <Image source={require('../../assets/Images/ticketPic.png')} style={styles.ticketImage}/>
+                {/*<Image source={require('../../assets/Images/ticketPic.png')} style={styles.ticketImage}/>*/}
             </View>
 
 
@@ -87,7 +87,7 @@ const UserDiscountsScreen = ({navigation}) => {
                       const credentials = await getCredential();
                       setUserId(credentials.userId);
                     };
-                
+
                     useEffect(() => {
                       getUserIdAndData();
                     }, []);
