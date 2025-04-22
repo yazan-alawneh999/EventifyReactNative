@@ -11,8 +11,23 @@ import UpdateEventScreen from '../screens/Home/HomeForOrganizer/EditEvent';
 import LoginMainRoleScreen from '../screens/LoginSigninScreens/LoginMain';
 import OrganizerSigninScreen from '../screens/LoginSigninScreens/loginForOrganizer';
 
+<<<<<<< HEAD
 // const Stack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
+=======
+
+import ShowProfileScreen from '../screens/SharedScreens/ShowProfileScreen.js';
+import EditProfileScreen from '../screens/SharedScreens/EditProfileScereen.js';
+import CreateProfileScreen from '../screens/SharedScreens/CreateProfileScreen.js';
+
+import AllEventAttendanceScreen from '../screens/OrganizerScreens/AllEventAttendanceScreen.js';
+import AllDiscountsScreen from '../screens/OrganizerScreens/GetAllDiscountsScreen.js';
+import AddNewDiscountScreen from '../screens/OrganizerScreens/AddNewDiscountScreen.js';
+
+
+
+const Stack = createNativeStackNavigator();
+>>>>>>> 20b2db6842d14de03a8289620cb7389938da733b
 
 const NavigatorForOrganizer = () => {
   return (
@@ -24,6 +39,7 @@ const NavigatorForOrganizer = () => {
       <Stack.Screen name="fileplus" component={CreatNowEventScreen} />
       <Stack.Screen name="Map" component={ProfileScreen} />
       <Stack.Screen name="user" component={ProfileScreen} />
+<<<<<<< HEAD
       <Stack.Screen name="EditEvent" component={UpdateEventScreen} />
       <Stack.Screen
         name="Signin"
@@ -45,6 +61,21 @@ const NavigatorForOrganizer = () => {
         component={OrganizerSigninScreen}
         options={{headerShown: false}}
       />
+=======
+
+
+      <Stack.Screen name="AllEventAttendanceScreen" component={AllEventAttendanceScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="AllDiscountsScreen" component={AllDiscountsScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="AddNewDiscountScreen" component={AddNewDiscountScreen} options={{ headerShown: false }}/>
+
+
+      <Stack.Screen name="ShowProfile" component={ShowProfileScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="CreateProfile" component={CreateProfileScreen} options={{ headerShown: false }}/>
+
+
+
+>>>>>>> 20b2db6842d14de03a8289620cb7389938da733b
     </Stack.Navigator>
   );
 };

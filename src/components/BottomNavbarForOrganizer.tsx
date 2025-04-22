@@ -20,7 +20,7 @@ const BottomNavBarOrganizer = () => {
     {name: 'align-justify', screen: 'list', title: 'list Event'},
     {name: 'file-plus', screen: 'fileplus', title: 'Create tiket'},
     {name: 'log-in', screen: 'Map', title: 'scan QR'},
-    {name: 'user', screen: 'user', title: 'Prifile'},
+    {name: 'user', screen: 'ShowProfile', title: 'Prifile'},
   ];
 
   return (

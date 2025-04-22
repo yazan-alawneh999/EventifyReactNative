@@ -12,12 +12,15 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Modal,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import BottomNavBar from '../../components/BottomNavBarScreen.js';
+import BottomNavBar from '../../components/BottomNavbarForUser.tsx';
 import SuccessDialog  from '../../components/SucesssPopupDialog.js';
 import FailedDialog  from '../../components/FailedPopupDialog.js';
-
+import { BASE_URL } from '../Api';
+import {getCredential}   from '../../../utils/Storage.js';
+import { WebView } from 'react-native-webview';
 
 export default function TicketInfoScreen({ route,navigation }) {
   const [quantity, setQuantity] = useState(1);
@@ -32,90 +35,113 @@ export default function TicketInfoScreen({ route,navigation }) {
   const [FailedPromocodeVisible, setFailedPromocodeVisible] = useState(false);
   const [BuyVisible, setBuyVisible] = useState(false);
   const [FailedBuyVisible, setFailedBuyVisible] = useState(false);
+  const [userId,setUserId] = useState();
+
+  const [showModal, setShowModal] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [status, setStatus] = useState('Pending');
+
+  const handleResponse = (data) => {
+    if (data.title === 'success') {
+        setShowModal(false);
+        setStatus('Payment has done successfully');
+        BuyTicket();
+    } else if (data.title === 'cancel') {
+        setShowModal(false);
+        setStatus('Cancelled');
+    } else {
+        return;
+    }
+};
+
 
   let EventID = route?.params?.EventID ?? 41;
-  let UserID = 22; //todo replace it whith the session UserID
 
 
+  const getUserIdAndData = async () => {
+    const credentials = await getCredential();
+    setUserId(credentials.userId);
+  };
 
   useEffect(() => {
-    gettingEventInfo(EventID);
-    if (selectedType  === 'Premium') {
-      SetTicketPriceAccordigtoType(TicketPrice * 1.20);
-    } else if (selectedType  === 'VIP') {
-      SetTicketPriceAccordigtoType(TicketPrice * 1.40);
-    }else if (selectedType === 'Regular'){
-      SetTicketPriceAccordigtoType(TicketPrice);
+    getUserIdAndData();
+  }, []);
+
+
+
+useEffect(() => {
+  gettingEventInfo(EventID);
+  if (selectedType  === 'Premium') {
+    SetTicketPriceAccordigtoType(TicketPrice * 1.20);
+  } else if (selectedType  === 'VIP') {
+    SetTicketPriceAccordigtoType(TicketPrice * 1.40);
+  }else if (selectedType === 'Regular'){
+    SetTicketPriceAccordigtoType(TicketPrice);
+  }
+  SetTotalPrice((TicketPriceAccordigtoType * quantity) - discountAmount);
+},[quantity, TicketPriceAccordigtoType, discountAmount, EventID,selectedType,TicketPrice]);
+
+const gettingEventInfo = async (evID) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/Event/getEventByID/${evID}`);
+    const data = response.data;
+    SetEventName(data.eventName);
+    SetTicketPrice(Number(data.price));
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
+
+
+
+const getDiscounts = async ({userID,disCode }) =>{
+  try {
+    const response = await axios.get(`${BASE_URL}/api/Discount/GetDiscountsByUserAndCode/${userID}/${disCode}`);
+    const data = response.data;
+    SetdiscountAmount(Number(data.discountamount));
+    if(response.status === 200 || response.status === 201){
+      setPromocodeVisible(true);
     }
-    SetTotalPrice((TicketPriceAccordigtoType * quantity) - discountAmount);
-  },[quantity, TicketPriceAccordigtoType, discountAmount, EventID,selectedType,TicketPrice]);
+  } catch (error) {
+    setFailedPromocodeVisible(true);
+  }
+};
 
-  const gettingEventInfo = async (evID) => {
-    try {
-      const response = await axios.get(`https://0a01-92-241-35-216.ngrok-free.app/api/Event/getEventByID/${evID}`);
-      const data = response.data;
-      SetEventName(data.eventName);
-      SetTicketPrice(Number(data.price));
-    } catch (error) {
-      console.error('Error fetching data:', error);
+
+const BuyTicket = async () => {
+  let discountCode = '';
+  for(let i = 1; i <= quantity; i++){
+    if(i === 1){
+      discountCode = promoCode;
     }
-  };
-
-
-
-  const getDiscounts = async ({userID,disCode }) =>{
-    try {
-      const response = await axios.get(`https://0a01-92-241-35-216.ngrok-free.app/api/Discount/GetDiscountsByUserAndCode/${userID}/${disCode}`);
-      const data = response.data;
-      SetdiscountAmount(Number(data.discountamount));
-      if(response.status === 200 || response.status === 201){
-        setPromocodeVisible(true);
-      }
-    } catch (error) {
-      setFailedPromocodeVisible(true);
+    else{
+      discountCode = '';
     }
-  };
 
-
-  const BuyTicket = async () => {
-    let discountCode = '';
-    for(let i = 1; i <= quantity; i++){
-      if(i === 1){
-        discountCode = promoCode;
-      }
-      else{
-        discountCode = '';
-      }
-
-        try {
-          const response = await axios.post('https://0a01-92-241-35-216.ngrok-free.app/api/BuyTicket',
-              {
-                t_EventID: EventID,
-                t_UserID: UserID,
-                t_TicketType: selectedType,
-                t_Price:TicketPriceAccordigtoType,
-                t_Discount:discountCode,
-              },
-              {
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              }
-          );
-          if (response.status === 200 || response.status === 201) {
-            setBuyVisible(true);
-          }
-          } catch (error) {
-              alert('failed To Buy the Ticket.');
-          }
+      try {
+        const response = await axios.post(`${BASE_URL}/api/BuyTicket`,
+            {
+              t_EventID: EventID,
+              t_UserID: userId,
+              t_TicketType: selectedType,
+              t_Price:TicketPriceAccordigtoType,
+              t_Discount:discountCode,
+            }
+        );
+        if (response.status === 200 || response.status === 201) {
+          setBuyVisible(true);
         }
-  };
+        } catch (error) {
+            alert('failed To Buy the Ticket.');
+        }
+      }
+};
 
 
 
-  const changeQuantity = (delta) => {
-    setQuantity(prev => Math.max(1, prev + delta));
-  };
+const changeQuantity = (delta) => {
+  setQuantity(prev => Math.max(1, prev + delta));
+};
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -125,6 +151,23 @@ export default function TicketInfoScreen({ route,navigation }) {
         keyboardVerticalOffset={80}
       >
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+
+
+          <Modal
+                visible={showModal}
+                onRequestClose={() => setShowModal(false)}
+            >
+                <WebView
+                    source={{
+                        uri: `https://f670-37-123-83-25.ngrok-free.app?amount=${TotalPrice}`,
+                    }}
+                    onNavigationStateChange={handleResponse}
+                    injectedJavaScript={'document.f1.submit()'}
+                />
+            </Modal>
+
+
+
           <View style={styles.header}>
             <Ionicons name="arrow-back" size={24} color="black"/>
             <Text style={styles.headerText}>Ticket info</Text>
@@ -199,7 +242,7 @@ export default function TicketInfoScreen({ route,navigation }) {
               onChangeText={setPromoCode}
             />
             <TouchableOpacity style={styles.applyButton}
-              onPress={() => getDiscounts({ userID: UserID, disCode: promoCode })}
+              onPress={() => getDiscounts({ userID: userId, disCode: promoCode })}
             >
               <Text style={styles.applyText}>Apply</Text>
             </TouchableOpacity>
@@ -231,7 +274,7 @@ export default function TicketInfoScreen({ route,navigation }) {
 
           <View style={styles.BuyButtonContainer}>
           <TouchableOpacity style={styles.cartButton}
-          onPress={ ()=> {BuyTicket();}}
+          onPress={ ()=> { setShowModal(true);}}
           >
             <Ionicons name="cart-outline" size={20} color="white" />
             <Text style={styles.cartText}>Add to Cart</Text>

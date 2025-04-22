@@ -11,8 +11,11 @@ import {
   SafeAreaView,
   Platform,
 } from 'react-native';
-import BottomNavBar from '../../components/BottomNavBarScreen.js';
+import UserBottomNavBar from '../../components/BottomNavbarForUser.tsx';
+import OrgBottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {BASE_URL} from '../../utils/api';
+import {getCredential, logout} from '../../../utils/Storage.js';
 
 const ProfilNotExists = ({navigation}) => {
   return (
@@ -33,7 +36,7 @@ const ProfilNotExists = ({navigation}) => {
     </View>
   );
 };
-let fallbackImage = require('../../assets/Images/imagesError.png');
+
 const ProfilExists = ({
   navigation,
   fName,
@@ -44,11 +47,16 @@ const ProfilExists = ({
   phone,
   emailaddress,
 }) => {
+  const handleLogout = async () => {
+    await logout();
+  };
   return (
     <View style={styles.container}>
       <Image
         source={
-          proilePic && proilePic !== '' ? {uri: proilePic} : fallbackImage
+          proilePic === '../../assets/Images/imagesError.png'
+            ? '../../assets/Images/imagesError.png'
+            : {uri: proilePic}
         }
         style={styles.avatar}
       />
@@ -86,13 +94,40 @@ const ProfilExists = ({
         </View>
       </View>
 
-      <TouchableOpacity style={styles.EditProfileButton} onPress={() => {}}>
+      <TouchableOpacity
+        style={styles.EditProfileButton}
+        onPress={() => {
+          navigation.navigate('AllTicktsScreen');
+        }}>
         <View style={styles.buttonContainer}>
           <Text style={styles.EditProfileButtonText}>Your Tickets</Text>
           <View style={styles.ArrowIconContainer}>
             <Ionicons name="arrow-forward" size={24} color="#fff" />
           </View>
         </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.EditProfileButton}
+        onPress={() => {
+          navigation.navigate('UserDiscountsScreen');
+        }}>
+        <View style={styles.buttonContainer}>
+          <Text style={styles.EditProfileButtonText}>Your Discount</Text>
+          <View style={styles.ArrowIconContainer}>
+            <Ionicons name="arrow-forward" size={24} color="#fff" />
+          </View>
+        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={() => {
+          handleLogout();
+          navigation.navigate('Signin');
+        }}>
+        <Ionicons name="exit" size={24} color="#ed1c00" />
+        <Text style={styles.LogoutText}>Logout</Text>
       </TouchableOpacity>
     </View>
   );
@@ -106,16 +141,23 @@ const ProfileScreen = ({navigation}) => {
   const [email, setEmail] = useState('User@Example.com');
   const [phoneNumber, setphoneNumber] = useState('+962 *********');
   const [profileImage, setProfileImage] = useState(
-    '../assets/images/imagesError.png',
+    '../../assets/Images/imagesError.png',
   );
   const [accountExists, setAccountExists] = useState(true);
+  const [userId, setUserId] = useState();
 
-  const UserID = 22;
+  const getUserIdAndData = async () => {
+    const credentials = await getCredential();
+    setUserId(credentials.userId);
+  };
+  useEffect(() => {
+    getUserIdAndData();
+  }, []);
 
   const getProfileData = async userID => {
     try {
       const response = await axios.get(
-        `https://336d-92-241-35-216.ngrok-free.app/api/event-manager/profile-details/${userID}`,
+        `${BASE_URL}/api/event-manager/profile-details/${userID}`,
       );
       const data = response.data;
       setFirstName(data.firstName);
@@ -126,11 +168,8 @@ const ProfileScreen = ({navigation}) => {
       setphoneNumber(data.phoneNumber);
       setProfileImage(
         data.profileImage != null
-          ? data.profileImage.replace(
-              'https://336d-92-241-35-216.ngrok-free.app/images/',
-              '',
-            )
-          : '../../assets/images/imagesError.png',
+          ? data.profileImage.replace(`${BASE_URL}/images/`, '')
+          : '../../assets/Images/imagesError.png',
       );
 
       if (response.status === 200 || response.status === 201) {
@@ -142,8 +181,8 @@ const ProfileScreen = ({navigation}) => {
   };
 
   useEffect(() => {
-    getProfileData(UserID);
-  }, []);
+    getProfileData(userId);
+  }, [userId]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -176,7 +215,11 @@ const ProfileScreen = ({navigation}) => {
             <ProfilNotExists navigation={navigation} />
           )}
         </ScrollView>
-        <BottomNavBar navigation={navigation} />
+        {userId === 2 ? (
+          <UserBottomNavBar navigation={navigation} />
+        ) : (
+          <OrgBottomNavBar navigation={navigation} />
+        )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -220,7 +263,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   aboutSection: {
-    marginVertical: '5%',
+    marginTop: '3%',
     height: '25%',
   },
   sectionTitle: {
@@ -263,15 +306,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#546cfc',
     borderRadius: 12,
-    alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '60%',
-    height: '7%',
-  },
-  EditProfileButton: {
     width: '100%',
     height: '100%',
+  },
+  EditProfileButton: {
+    width: '60%',
+    height: '7%',
+    alignSelf: 'center',
+    marginBottom: '2%',
   },
   EditProfileButtonText: {
     width: '50%',
@@ -315,12 +359,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#546cfc',
     borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    marginTop: '50%',
+  },
+
+  logoutButton: {
+    flexDirection: 'row',
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '80%',
-    height: '10%',
-    marginTop: '50%',
+    borderWidth: 1,
+    borderColor: 'red',
+    borderRadius: 12,
+    width: '40%',
+    height: '7%',
+  },
+  LogoutText: {
+    color: '#ed1c00',
+    fontWeight: '500',
   },
 });
 
