@@ -9,6 +9,8 @@ import SigninScreen from '../screens/LoginSigninScreens/signinScreen';
 import SignupScreen from '../screens/LoginSigninScreens/signupScreen';
 import {PayPal} from '../screens/PayPalScreen/PayPal';
 import NavigatorForUser from './NavigatorOrganizer';
+import LoginMainRoleScreen from '../screens/LoginSigninScreens/LoginMain';
+import OrganizerSigninScreen from '../screens/LoginSigninScreens/loginForOrganizer';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
@@ -54,6 +56,16 @@ export default function AppNavigator() {
         component={PayPal}
         options={{headerShown: false}}
       />
+      <Stack.Screen
+        name="LoginMainRoleScreen"
+        component={LoginMainRoleScreen}
+        options={{headerShown: false}}
+      />
+      {/* <Stack.Screen
+        name="OrganizerSigninScreen"
+        component={OrganizerSigninScreen}
+        options={{headerShown: false, title: 'OrganizerSigninScreen'}}
+      /> */}
     </Stack.Navigator>
   );
 }

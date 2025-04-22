@@ -10,15 +10,13 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
-
-import axios from 'axios';
-import {getCredential, storeCredential} from '../../../utils/Storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {CommonActions} from '@react-navigation/native';
 import TextInput from '@react-native-material/core/src/TextInput';
 import IconButton from '@react-native-material/core/src/IconButton';
 import Button from '@react-native-material/core/src/Button';
 import {api, BASE_URL} from '../Api';
+import {storeCredential} from '../../../utils/Storage';
 
 const LogoElement = () => {
   return (
@@ -42,12 +40,11 @@ const SignUpLink = ({navigation}) => {
   );
 };
 
-const SigninScreen = ({navigation}) => {
+const OrganizerSigninScreen = ({navigation}) => {
   const [userName, setUserName] = useState('');
   const [pass, setPass] = useState('');
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [token, setToken] = useState('');
   const [errorLogin, setErrorLogin] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -80,13 +77,21 @@ const SigninScreen = ({navigation}) => {
         },
       );
 
-      console.log('✅ Login Success', response.data);
-      await storeCredential(response.data);
-      navigation.popTo('list');
+      const userData = response.data;
+
+      if (userData.role !== 2) {
+        setErrorLogin('This account is not for organizer');
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('✅ Organizer Login Success', userData);
+      await storeCredential(userData);
+      navigation.popToTop();
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
-          routes: [{name: 'list'}],
+          routes: [{name: 'OrganizerHome'}], // غيّر اسم الشاشة إذا كانت مختلفة
         }),
       );
     } catch (error) {
@@ -102,7 +107,7 @@ const SigninScreen = ({navigation}) => {
 
       switch (error.response.status) {
         case 401:
-          setErrorLogin('Unauthorized');
+          setErrorLogin('Invalid username or password');
           break;
         default:
           setErrorLogin('Unknown error');
@@ -137,14 +142,14 @@ const SigninScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      {/* Back Button */}
       <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}>
-        <Icon name="arrow-back" size={24} color="#333" />
+        onPress={() => navigation.goBack()}
+        style={styles.backButton}>
+        <Icon name="arrow-back" size={24} color="#626df8" />
       </TouchableOpacity>
 
       <LogoElement />
+
       <TextInput
         label={'User Name'}
         variant="outlined"
@@ -183,7 +188,7 @@ const SigninScreen = ({navigation}) => {
 
       <Button
         style={styles.signInButton}
-        title={'Login'}
+        title={'Login as Organizer'}
         onPress={handleLogin}
       />
 
@@ -192,7 +197,7 @@ const SigninScreen = ({navigation}) => {
   );
 };
 
-export default SigninScreen;
+export default OrganizerSigninScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -207,7 +212,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     display: 'flex',
     alignSelf: 'center',
-    marginTop: 100,
+    marginTop: 80,
     width: 200,
     height: 120,
   },
@@ -256,9 +261,5 @@ const styles = StyleSheet.create({
     top: 50,
     left: 20,
     zIndex: 10,
-    backgroundColor: '#f0f0f0',
-    padding: 8,
-    borderRadius: 50,
-    elevation: 2,
   },
 });

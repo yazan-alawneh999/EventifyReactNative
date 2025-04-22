@@ -39,7 +39,8 @@ const OnboardingScreen3 = () => {
         </Text>
 
         <View style={styles.buttonsRow}>
-          <TouchableOpacity onPress={() => navigation.navigate('Signin')}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('LoginMainRoleScreen')}>
             <Text style={styles.skip}>Skip</Text>
           </TouchableOpacity>
           <View style={styles.dotsContainer}>
@@ -47,7 +48,8 @@ const OnboardingScreen3 = () => {
             <View style={styles.dot} />
             <View style={styles.dotActive} />
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('Signin')}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('LoginMainRoleScreen')}>
             <Text style={styles.next}>Next</Text>
           </TouchableOpacity>
         </View>

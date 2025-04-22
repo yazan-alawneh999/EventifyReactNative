@@ -9,4 +9,14 @@ export type RootStackParamList = {
   Signup: undefined;
   Signin: undefined;
   PayPalScreen: undefined;
+  ProfileScreen: undefined;
+  user: undefined;
+  Map: undefined;
+  CreateEvent: undefined;
+  list: undefined;
+  fileplus: undefined;
+  ShowProfileScreen: undefined;
+  EditEvent: {eventId: string};
+  LoginMainRoleScreen: undefined;
+  OrganizerSigninScreen: undefined;
 };

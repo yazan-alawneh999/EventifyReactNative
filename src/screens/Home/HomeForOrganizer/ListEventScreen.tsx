@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,66 +7,95 @@ import {
   Image,
   TouchableOpacity,
   Alert,
-  Modal,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import BottomNavBarOrganizer from '../../../components/BottomNavbarForOrganizer';
-import {useContext} from 'react';
-import {UserContext} from '../../../components/UserContext';
-
-const events = [
-  {
-    eventID: 1,
-    eventName: 'Tech Conference',
-    eventType: 'Conference',
-    eventTime: '2025-03-01T10:00:00',
-    eventDate: '2025-05-01T00:00:00',
-    eventStatus: 'Progressed',
-    description: 'Technology trends in AI & Cloud.',
-    capacity: 100,
-    price: 50,
-    location: {
-      address: 'The Boulevard Arjaan by Rotana',
-      latitude: 31.958,
-      longitude: 35.9101,
-    },
-  },
-  {
-    eventID: 2,
-    eventName: 'Music Festival',
-    eventType: 'Music',
-    eventTime: '2025-04-01T18:00:00',
-    eventDate: '2025-06-10T00:00:00',
-    eventStatus: 'Upcoming',
-    description: 'A celebration of sound and rhythm.',
-    capacity: 500,
-    price: 80,
-    location: {
-      address: 'Amman Amphitheatre',
-      latitude: 31.958,
-      longitude: 35.9101,
-    },
-  },
-];
+import {api, BASE_URL} from '../../Api';
+import {getCredential} from '../../../../utils/Storage';
 
 const ListEventScreen = ({navigation}) => {
-  const {userInfo} = useContext(UserContext); // 2️⃣ استخدم السياق لاستخراج بيانات المستخدم
-  const [selectedType, setSelectedType] = useState('All');
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [userID, setUserID] = useState(null);
+  const [userData, setUserData] = useState(null);
   const today = new Date().toLocaleDateString();
+
+  const fetchEvents = async () => {
+    try {
+      const response = await api.get(
+        `${BASE_URL}/api/Location/getallPinLocationEachEvent`,
+      );
+      setEvents(response.data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserID = async () => {
+      try {
+        const credential = await getCredential();
+        setUserID(credential?.userid || null);
+      } catch (error) {
+        console.error('Error getting credential:', error);
+      }
+    };
+    fetchUserID();
+  }, []);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!userID) return;
+
+      try {
+        const response = await api.get(
+          `${BASE_URL}/api/event-manager/profile-details/${userID}`,
+        );
+        setUserData(response.data);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+
+    fetchUser();
+  }, [userID]);
 
   const handleLogout = () => {
     Alert.alert('Logout', 'You have been logged out.');
   };
 
+  const handleDeleteEvent = eventID => {
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this event?',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Delete',
+          onPress: async () => {
+            try {
+              await api.delete(
+                `${BASE_URL}/api/Event/DeleteEvent?ID=${eventID}`,
+              );
+              await fetchEvents();
+
+              Alert.alert('Deleted', 'Event has been deleted successfully.');
+            } catch (error) {
+              console.error('Error deleting event:', error);
+            }
+          },
+          style: 'destructive',
+        },
+      ],
+    );
+  };
+
   const handleCreateEvent = () => {
     navigation.navigate('CreateEvent');
   };
-
-  const filteredEvents =
-    selectedType === 'All'
-      ? events
-      : events.filter(event => event.eventType === selectedType);
 
   const renderEventCard = ({item}) => (
     <View style={styles.card}>
@@ -112,10 +141,16 @@ const ListEventScreen = ({navigation}) => {
         </Text>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.editBtn}>
+          <TouchableOpacity
+            style={styles.editBtn}
+            onPress={() =>
+              navigation.navigate('EditEvent', {eventId: item.eventID})
+            }>
             <Text style={styles.btnText}>Edit</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.deleteBtn}>
+          <TouchableOpacity
+            style={styles.deleteBtn}
+            onPress={() => handleDeleteEvent(item.eventID)}>
             <Text style={styles.btnText}>Delete</Text>
           </TouchableOpacity>
         </View>
@@ -128,32 +163,25 @@ const ListEventScreen = ({navigation}) => {
       <View style={styles.header}>
         <View style={styles.organizerRow}>
           <Image
-            source={{uri: userInfo.profileImage}} // 3️⃣ استخدم صورة المنظم من السياق
+            source={{uri: userData?.profileImage}}
             style={styles.profileImage}
           />
           <View style={{flex: 1}}>
             <Text style={styles.organizerName}>
-              Welcome, {userInfo.username}
+              Welcome, {userData?.username}
             </Text>
-            {/* 4️⃣ استخدم اسم المنظم من السياق */}
             <Text style={styles.dateText}>{today}</Text>
           </View>
           <TouchableOpacity onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={24} color="white" />
           </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          style={styles.filterButton}
-          onPress={() => setIsModalVisible(true)}>
-          <Text style={styles.filterButtonText}>Sort By: {selectedType}</Text>
-        </TouchableOpacity>
       </View>
 
       <FlatList
-        data={filteredEvents}
+        data={events}
         renderItem={renderEventCard}
-        keyExtractor={item => item.eventID.toString()}
+        keyExtractor={item => item.eventID}
         contentContainerStyle={{paddingBottom: 120}}
       />
 
@@ -162,41 +190,13 @@ const ListEventScreen = ({navigation}) => {
       </TouchableOpacity>
 
       <BottomNavBarOrganizer />
-
-      {/* Modal for Filter Selection */}
-      <Modal
-        visible={isModalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setIsModalVisible(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Choose Type</Text>
-            {['All', 'Conference', 'Music'].map(type => (
-              <TouchableOpacity
-                key={type}
-                style={styles.modalOption}
-                onPress={() => {
-                  setSelectedType(type);
-                  setIsModalVisible(false);
-                }}>
-                <Text style={styles.modalOptionText}>{type}</Text>
-              </TouchableOpacity>
-            ))}
-            <TouchableOpacity
-              onPress={() => setIsModalVisible(false)}
-              style={styles.closeModalBtn}>
-              <Text style={styles.closeModalText}>Exit</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
 
 export default ListEventScreen;
 
+// === STYLES ===
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -229,17 +229,6 @@ const styles = StyleSheet.create({
   dateText: {
     color: '#ddd',
     fontSize: 12,
-  },
-  filterButton: {
-    backgroundColor: 'white',
-    padding: 10,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
-    marginTop: 10,
-  },
-  filterButtonText: {
-    color: '#5f6cff',
-    fontWeight: '600',
   },
   card: {
     backgroundColor: '#fff',
@@ -311,43 +300,5 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 4,
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalContent: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 15,
-  },
-  modalOption: {
-    paddingVertical: 10,
-    width: '100%',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  modalOptionText: {
-    fontSize: 16,
-  },
-  closeModalBtn: {
-    marginTop: 15,
-    backgroundColor: '#5f6cff',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-  },
-  closeModalText: {
-    color: 'white',
-    fontWeight: '600',
   },
 });
