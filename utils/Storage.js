@@ -35,7 +35,8 @@ export const getRole = async () => {
 export const isOrganizer = async () => {
     try {
         const role = await getRole();
-        return role === 2;
+        return role === "2";
+        console.log('[Decoded Role]', role);
     } catch (e) {
         console.error('Error checking organizer role:', e);
         return false;

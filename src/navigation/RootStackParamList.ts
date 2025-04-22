@@ -19,4 +19,6 @@ export type RootStackParamList = {
   TicketInfoScreen: undefined;
   AllTicktsScreen: undefined;
   UserDiscountsScreen: undefined;
+  OrgnizerScreens: undefined;
+  UserScreens: undefined;
 };

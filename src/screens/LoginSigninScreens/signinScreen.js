@@ -17,7 +17,8 @@ import TextInput from '@react-native-material/core/src/TextInput';
 import IconButton from '@react-native-material/core/src/IconButton';
 import Button from '@react-native-material/core/src/Button';
 import {api, BASE_URL} from '../Api';
-import {getCredential, isOrganizer, storeCredential} from '../../../utils/Storage';
+import {getCredential, getRole, isOrganizer, storeCredential} from '../../../utils/Storage';
+import axios from "axios";
 
 const LogoElement = () => (
     <View style={styles.logoContainer}>
@@ -29,12 +30,12 @@ const LogoElement = () => (
 );
 
 const SignUpLink = ({navigation}) => (
-    <View style={styles.signUplinkContainer}>
-      <Text style={styles.linkText}>Don't have an account? </Text>
-      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-        <Text style={[styles.linkText, {color: '#626df8'}]}>Sign Up</Text>
-      </TouchableOpacity>
-    </View>
+  <View style={styles.signUplinkContainer}>
+    <Text style={styles.linkText}>Don't have an account? </Text>
+    <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+      <Text style={[styles.linkText, {color: '#626df8'}]}>Sign Up</Text>
+    </TouchableOpacity>
+  </View>
 );
 
 const SigninScreen = ({navigation}) => {
@@ -67,27 +68,17 @@ const SigninScreen = ({navigation}) => {
         password: pass,
       });
 
+      // const response = await axios.post(`https://18b9-109-107-251-55.ngrok-free.app/api/event-manager/auth/login`, {
+      //   username: userName,
+      //   password: pass,
+      // });
+
       console.log('✅ Login Success', response.data);
       await storeCredential(response.data);
 
+      console.log('isOrganizer',await isOrganizer());
+      console.log('isOrganizer',await  getRole());
 
-      if ((await  isOrganizer())){
-        navigation.popTo('list')
-        navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{name: 'list'}],
-            })
-        );
-      }else {
-        navigation.popTo('RootHomeScreen')
-        navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{name: 'RootHomeScreen'}],
-            })
-        );
-      }
 
 
 
@@ -109,7 +100,22 @@ const SigninScreen = ({navigation}) => {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    const checkLogin = async () => {
+      const creds = await getCredential();
+      if (creds?.token) {
+        const isOrg = await isOrganizer();
+        navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: isOrg ? 'OrgnizerScreens' : 'UserScreens' }],
+            })
+        );
+      }
+    };
 
+    checkLogin();
+  }, []);
   useEffect(() => {
     if (errorLogin) {
       Alert.alert('Login Error', errorLogin, [
@@ -121,6 +127,7 @@ const SigninScreen = ({navigation}) => {
       ]);
     }
   }, [errorLogin]);
+
 
   if (isLoading) {
     return (

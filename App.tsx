@@ -3,9 +3,10 @@ import {NavigationContainer} from '@react-navigation/native';
 import AppNavigator from './src/navigation/AppNavigator';
 import NavigatorForOrganizer from './src/navigation/NavigatorOrganizer';
 import {UserProvider} from './src/components/UserContext';
+import {navigationRef} from "./src/screens/Api.tsx";
 function App(): React.JSX.Element {
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <UserProvider>
          <AppNavigator />
         {/*<NavigatorForOrganizer />{' '}*/}

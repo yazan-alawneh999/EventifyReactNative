@@ -22,6 +22,8 @@ import BuyTicketScreen from '../screens/UserScreens/BuyticketScreen.js';
 import TicketInfoScreen from '../screens/UserScreens/TicketInformationScreen.js';
 import UserTicketScreen from '../screens/UserScreens/UserTicketsScreen.js';
 import UserDiscountsScreen from '../screens/UserScreens/UserDiscountsScreen.js';
+import NavigatorForOrganizer from "./NavigatorOrganizer";
+import NavigatorUser from "./NavigatorUser.tsx";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -48,6 +50,13 @@ export default function AppNavigator() {
         component={OnboardingScreen3}
         options={{headerShown: false}}
       />
+
+        <Stack.Screen
+            name="OrgnizerScreens"
+            component={NavigatorForOrganizer}
+            options={{headerShown: false}}
+        />
+
       <Stack.Screen
         name="Signin"
         component={SigninScreen}
@@ -63,6 +72,11 @@ export default function AppNavigator() {
         component={NavigatorForUser}
         options={{headerShown: false}}
       />
+        <Stack.Screen
+            name="UserScreens"
+            component={NavigatorUser}
+            options={{headerShown: false}}
+        />
       <Stack.Screen
         name="PayPalScreen"
         component={PayPal}
