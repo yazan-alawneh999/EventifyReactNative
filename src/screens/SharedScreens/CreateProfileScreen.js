@@ -15,85 +15,78 @@ import {
   Dimensions,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { launchImageLibrary } from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import UserBottomNavBar from '../../components/BottomNavbarForUser.tsx';
 import OrgBottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
 import BottomNavBar from '../../components/BottomNavBarScreen.js';
 import SuccessDialog from '../../components/SucesssPopupDialog';
 import FailedDialog from '../../components/FailedPopupDialog.js';
-import {getCredential}   from '../../../utils/Storage.js';
-import { BASE_URL ,api} from '../Api';
-
-
+import {getCredential} from '../../../utils/Storage.js';
+import {BASE_URL, api} from '../Api';
 
 const {width, height} = Dimensions.get('window');
 const CreateProfileScreen = ({navigation}) => {
-    const [profileImage, setProfileImage] = useState(null);
-    const [firstName,setFirstName] = useState(null);
-    const [lastName,setLastName] = useState(null);
-    const [city,setCity] = useState(null);
-    const [userAge,setUserAge] = useState(null);
-    const [email,setEmail] = useState(null);
-    const [phoneNumber,setphoneNumber] = useState(null);
-    const [savedSuccessfuly,setSavedSuccessfuly] = useState(false);
-    const [savedFailed,setSavedFailed] = useState(false);
-    const [RoleID,setRoleID] = useState();
-    const [userNamr,setUserName] = useState();
-    const [userId,setUserId] = useState();
-    const isFormValid = () => {
-        return (
-          firstName?.trim() &&
-          lastName?.trim() &&
-          city?.trim() &&
-          userAge?.trim() &&
-          email?.trim() &&
-          phoneNumber?.trim() &&
-          RoleID &&
-          userNamr
-        );
-      };
+  const [profileImage, setProfileImage] = useState(null);
+  const [firstName, setFirstName] = useState(null);
+  const [lastName, setLastName] = useState(null);
+  const [city, setCity] = useState(null);
+  const [userAge, setUserAge] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [phoneNumber, setphoneNumber] = useState(null);
+  const [savedSuccessfuly, setSavedSuccessfuly] = useState(false);
+  const [savedFailed, setSavedFailed] = useState(false);
+  const [RoleID, setRoleID] = useState();
+  const [userNamr, setUserName] = useState();
+  const [userId, setUserId] = useState();
+  const isFormValid = () => {
+    return (
+      firstName?.trim() &&
+      lastName?.trim() &&
+      city?.trim() &&
+      userAge?.trim() &&
+      email?.trim() &&
+      phoneNumber?.trim() &&
+      RoleID &&
+      userNamr
+    );
+  };
 
+  const getUserIdAndData = async () => {
+    const credentials = await getCredential();
+    setUserId(credentials.userId);
+  };
 
+  useEffect(() => {
+    getUserIdAndData();
+  }, []);
 
+  useEffect(() => {
+    if (userId) {
+      getUserinfo(userId);
+    }
+  }, [userId]);
 
-    const getUserIdAndData = async () => {
-      const credentials = await getCredential();
-      setUserId(credentials.userId);
-    };
+  const getUserinfo = async uID => {
+    try {
+      const token = (await getCredential()).token;
 
-    useEffect(() => {
-      getUserIdAndData();
-    }, []);
+      const response = await api.get(
+        `${BASE_URL}/api/event-manager/profile-details/${uID}`,
+        // {
+        //   headers: {
+        //     Authorization: `Bearer ${token}`,
+        //   },
+        // }
+      );
 
-
-    useEffect(() => {
-      if (userId) {
-        getUserinfo(userId);
-      }
-    }, [userId]);
-
-
-    const getUserinfo = async (uID) => {
-      try {
-        const token = (await getCredential()).token;
-
-        const response = await api.get(
-          `${BASE_URL}/api/event-manager/profile-details/${uID}`,
-          // {
-          //   headers: {
-          //     Authorization: `Bearer ${token}`,
-          //   },
-          // }
-        );
-
-        const data = response.data;
-        setRoleID(data.roleID);
-        setUserName(data.username);
-      } catch (error) {
-        alert('Failed to get user information');
-        console.error(error);
-      }
-    };
+      const data = response.data;
+      setRoleID(data.roleID);
+      setUserName(data.username);
+    } catch (error) {
+      alert('Failed to get user information');
+      console.error(error);
+    }
+  };
 
   const handleSelectImage = () => {
     const options = {
@@ -197,7 +190,7 @@ const CreateProfileScreen = ({navigation}) => {
             <Text style={styles.headerText}>Create Profile</Text>
           </View>
 
-            <View style={styles.profileImageContainer}>
+          <View style={styles.profileImageContainer}>
             {/* <Image
   // source={
   //   profileImage
@@ -206,10 +199,12 @@ const CreateProfileScreen = ({navigation}) => {
   // }
   style={styles.profileImage}
 /> */}
-              <TouchableOpacity style={styles.editIcon} onPress={handleSelectImage}>
-                <Ionicons name="add" size={35} color="white" />
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              style={styles.editIcon}
+              onPress={handleSelectImage}>
+              <Ionicons name="add" size={35} color="white" />
+            </TouchableOpacity>
+          </View>
           <View style={styles.profileImageContainer}>
             <Image
               source={
@@ -311,10 +306,13 @@ const CreateProfileScreen = ({navigation}) => {
           </TouchableOpacity>
         </ScrollView>
 
-        { userId === 2 ? (<UserBottomNavBar navigation={navigation}/>) : (<OrgBottomNavBar navigation={navigation}/>)}
-    </KeyboardAvoidingView>
-        <BottomNavBar navigation={navigation} />
+        {userId === 2 ? (
+          <UserBottomNavBar navigation={navigation} />
+        ) : (
+          <OrgBottomNavBar navigation={navigation} />
+        )}
       </KeyboardAvoidingView>
+      <BottomNavBar navigation={navigation} />
     </SafeAreaView>
   );
 };
