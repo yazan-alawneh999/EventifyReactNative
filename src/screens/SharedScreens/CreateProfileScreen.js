@@ -16,9 +16,14 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { launchImageLibrary } from 'react-native-image-picker';
-import BottomNavBar from '../../components/BottomNavBarScreen.js';
+import UserBottomNavBar from '../../components/BottomNavbarForUser.tsx';
+import OrgBottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
 import SuccessDialog from '../../components/SucesssPopupDialog';
 import FailedDialog from '../../components/FailedPopupDialog.js';
+import {getCredential}   from '../../../utils/Storage.js';
+import { BASE_URL } from '../../utils/api';
+
+
 
 const { width, height } = Dimensions.get('window');
 const CreateProfileScreen = ({navigation}) => {
@@ -33,6 +38,7 @@ const CreateProfileScreen = ({navigation}) => {
     const [savedFailed,setSavedFailed] = useState(false);
     const [RoleID,setRoleID] = useState();
     const [userNamr,setUserName] = useState();
+    const [userId,setUserId] = useState();
     const isFormValid = () => {
         return (
           firstName?.trim() &&
@@ -47,23 +53,45 @@ const CreateProfileScreen = ({navigation}) => {
       };
 
 
-    const userId = 62;
+
+
+    const getUserIdAndData = async () => {
+      const credentials = await getCredential();
+      setUserId(credentials.userId);
+    };
+
+    useEffect(() => {
+      getUserIdAndData();
+    }, []);
 
 
     useEffect(() => {
+      if (userId) {
         getUserinfo(userId);
-    },[]);
+      }
+    }, [userId]);
 
 
-    const getUserinfo = async (uID)=>{
-        try {
-            const response = await axios.get(`https://336d-92-241-35-216.ngrok-free.app/api/event-manager/profile-details/${uID}`);
-            const data = response.data;
-            setRoleID(data.roleID);
-            setUserName(data.username);
-          } catch (error) {
-              alert('failed To git user information');
+    const getUserinfo = async (uID) => {
+      try {
+        const token = (await getCredential()).token;
+
+        const response = await axios.get(
+          `${BASE_URL}/api/event-manager/profile-details/${uID}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
+        );
+
+        const data = response.data;
+        setRoleID(data.roleID);
+        setUserName(data.username);
+      } catch (error) {
+        alert('Failed to get user information');
+        console.error(error);
+      }
     };
 
     const handleSelectImage = () => {
@@ -170,14 +198,14 @@ return (
 
 
             <View style={styles.profileImageContainer}>
-              <Image
-                source={
-                  profileImage?.uri
-                    ? { uri: profileImage.uri }
-                    : require('../../assets/images/SmallLogo.png')
-                }
-                style={styles.profileImage}
-              />
+            <Image
+  source={
+    profileImage
+      ? { uri: profileImage }
+      : require('../../assets/Images/SmallLogo.png')
+  }
+  style={styles.profileImage}
+/>
               <TouchableOpacity style={styles.editIcon} onPress={handleSelectImage}>
                 <Ionicons name="add" size={35} color="white" />
               </TouchableOpacity>
@@ -225,7 +253,8 @@ return (
                 <Text style={styles.saveButtonText}>Save Changes</Text>
             </TouchableOpacity>
         </ScrollView>
-        <BottomNavBar navigation={navigation}/>
+
+        { userId === 2 ? (<UserBottomNavBar navigation={navigation}/>) : (<OrgBottomNavBar navigation={navigation}/>)}
     </KeyboardAvoidingView>
     </SafeAreaView>
     );
