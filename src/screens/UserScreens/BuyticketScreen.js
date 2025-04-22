@@ -18,7 +18,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import BottomNavBar from '../../components/BottomNavbarForUser.tsx';
 import SuccessDialog  from '../../components/SucesssPopupDialog.js';
 import FailedDialog  from '../../components/FailedPopupDialog.js';
-import { BASE_URL } from '../Api';
+import { BASE_URL,api } from '../Api';
 import {getCredential}   from '../../../utils/Storage.js';
 import { WebView } from 'react-native-webview';
 
@@ -42,20 +42,25 @@ export default function TicketInfoScreen({ route,navigation }) {
   const [status, setStatus] = useState('Pending');
 
   const handleResponse = (data) => {
-    if (data.title === 'success') {
+      BuyTicket();
+        if (data.title === 'success') {
+        
         setShowModal(false);
         setStatus('Payment has done successfully');
+        console.log("onPaypal Success")
         BuyTicket();
+        
     } else if (data.title === 'cancel') {
         setShowModal(false);
         setStatus('Cancelled');
+        console.log("onPaypal cancel")
     } else {
         return;
     }
 };
 
 
-  let EventID = route?.params?.EventID ?? 41;
+  let EventID = route?.params?.EventID ?? 6;
 
 
   const getUserIdAndData = async () => {
@@ -83,7 +88,7 @@ useEffect(() => {
 
 const gettingEventInfo = async (evID) => {
   try {
-    const response = await axios.get(`${BASE_URL}/api/Event/getEventByID/${evID}`);
+    const response = await api.get(`${BASE_URL}/api/Event/getEventByID/${evID}`);
     const data = response.data;
     SetEventName(data.eventName);
     SetTicketPrice(Number(data.price));
@@ -96,7 +101,7 @@ const gettingEventInfo = async (evID) => {
 
 const getDiscounts = async ({userID,disCode }) =>{
   try {
-    const response = await axios.get(`${BASE_URL}/api/Discount/GetDiscountsByUserAndCode/${userID}/${disCode}`);
+    const response = await api.get(`${BASE_URL}/api/Discount/GetDiscountsByUserAndCode/${userID}/${disCode}`);
     const data = response.data;
     SetdiscountAmount(Number(data.discountamount));
     if(response.status === 200 || response.status === 201){
@@ -119,14 +124,19 @@ const BuyTicket = async () => {
     }
 
       try {
+        const token = (await getCredential()).token;
         const response = await axios.post(`${BASE_URL}/api/BuyTicket`,
             {
-              t_EventID: EventID,
+              t_EventID:EventID,
               t_UserID: userId,
               t_TicketType: selectedType,
               t_Price:TicketPriceAccordigtoType,
               t_Discount:discountCode,
-            }
+            },{
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
         );
         if (response.status === 200 || response.status === 201) {
           setBuyVisible(true);
@@ -159,7 +169,7 @@ const changeQuantity = (delta) => {
             >
                 <WebView
                     source={{
-                        uri: `https://f670-37-123-83-25.ngrok-free.app?amount=${TotalPrice}`,
+                        uri: `https://28c3-37-123-65-107.ngrok-free.app/?amount=${TotalPrice}`,
                     }}
                     onNavigationStateChange={handleResponse}
                     injectedJavaScript={'document.f1.submit()'}

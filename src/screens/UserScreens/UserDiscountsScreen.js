@@ -32,7 +32,7 @@ const AllDiscountsList = ({DiscountsList})=>{
           <View style={styles.row}>
 
             <View style={styles.distanceBadge}>
-                {/*<Image source={require('../../assets/Images/ticketPic.png')} style={styles.ticketImage}/>*/}
+                <Image source={require('../../assets/Images/ticketPic.png')} style={styles.ticketImage}/>
             </View>
 
 
@@ -98,7 +98,8 @@ const UserDiscountsScreen = ({navigation}) => {
 
     const getDiscountsList = async (userID) =>{
         try {
-          const response = await api.get(`${BASE_URL}/api/Discount/GetDiscountsByUserID/${userID}`);
+          const credentials = await getCredential();
+          const response = await api.get(`${BASE_URL}/api/Discount/GetDiscountsByUserID/${credentials.userId}`);
           const data = response.data;
           setDiscountsList(data);
 
