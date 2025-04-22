@@ -124,19 +124,19 @@ const EditProfileScreen = ({navigation}) => {
     });
   };
 
-  const UpdateProfile = async () => {
-    try {
-      const token = (await getCredential()).token;
-      const formData = new FormData();
-      formData.append('FirstName', firstName);
-      formData.append('LastName', lastName);
-      formData.append('City', city);
-      formData.append('Age', parseInt(userAge, 10).toString());
-      formData.append('Email', email);
-      formData.append('PhoneNumber', phoneNumber);
-      formData.append('RoleID', RoleID);
-      formData.append('Username', userNamr);
-      // Removed duplicate UpdateProfile declaration
+    const UpdateProfile = async () => {
+        try {
+            const credentials = await getCredential();
+            const token = (await getCredential()).token;
+            const formData = new FormData();
+            formData.append('FirstName', firstName);
+            formData.append('LastName', lastName);
+            formData.append('City', city);
+            formData.append('Age', parseInt(userAge, 10).toString());
+            formData.append('Email', email);
+            formData.append('PhoneNumber', phoneNumber);
+            formData.append('RoleID', RoleID);
+            formData.append('Username', userNamr);
 
       if (profileImage) {
         formData.append('ImageFile', {
@@ -148,16 +148,16 @@ const EditProfileScreen = ({navigation}) => {
         formData.append('ImageFile', '');
       }
 
-      const response = await axios.put(
-        `${BASE_URL}/api/event-manager/admin-dashboard/UpdateProfile/${userId}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+            const response = await axios.put(
+               `${BASE_URL}/api/event-manager/admin-dashboard/UpdateProfile/${credentials.userId}`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
       if (response.status === 200 || response.status === 201) {
         setSavedSuccessfuly(true);
