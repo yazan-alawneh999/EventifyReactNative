@@ -77,7 +77,19 @@ const SigninScreen = ({navigation}) => {
       await storeCredential(response.data);
 
       console.log('isOrganizer',await isOrganizer());
-      console.log('isOrganizer',await  getRole());
+      console.log('role',await  getRole());
+
+
+      const creds = await getCredential();
+      if (creds?.token) {
+        const isOrg = await isOrganizer();
+        navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: isOrg ? 'OrgnizerScreens' : 'UserScreens' }],
+            })
+        ); // <-- this closing bracket was missing!
+      }
 
 
 

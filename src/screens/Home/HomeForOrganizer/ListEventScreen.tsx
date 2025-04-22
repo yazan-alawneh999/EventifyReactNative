@@ -13,6 +13,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import BottomNavBarOrganizer from '../../../components/BottomNavbarForOrganizer';
 import {useContext} from 'react';
 import {UserContext} from '../../../components/UserContext';
+import {logout} from "../../../../utils/Storage";
 
 const events = [
   {
@@ -55,8 +56,11 @@ const ListEventScreen = ({navigation}) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const today = new Date().toLocaleDateString();
 
-  const handleLogout = () => {
-    Alert.alert('Logout', 'You have been logged out.');
+
+  const handleLogout =  async () => {
+
+    await logout()
+    navigation.navigate('Signin');
   };
 
   const handleCreateEvent = () => {
