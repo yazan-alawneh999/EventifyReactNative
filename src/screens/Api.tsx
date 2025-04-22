@@ -19,7 +19,7 @@ import {RootStackParamList} from "../navigation/RootStackParamList.ts";
 
 
 
-export const BASE_URL = "https://18b9-109-107-251-55.ngrok-free.app";
+export const BASE_URL = "https://4000-109-107-227-240.ngrok-free.app";
 export  const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 export const api =  axios.create({
