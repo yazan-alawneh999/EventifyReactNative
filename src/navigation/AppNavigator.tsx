@@ -5,27 +5,21 @@ import React from 'react';
 import OnboardingScreen1 from '../screens/onboradingScreenAndSplash/Onboarding1';
 import OnboardingScreen2 from '../screens/onboradingScreenAndSplash/Onboarding2';
 import OnboardingScreen3 from '../screens/onboradingScreenAndSplash/Onboarding3';
-import SigninScreen from '../screens/LoginSigninScreens/signinScreen';
 import SignupScreen from '../screens/LoginSigninScreens/signupScreen';
 import {PayPal} from '../screens/PayPalScreen/PayPal';
-import NavigatorForUser from './NavigatorOrganizer';
-
-import ShowProfileScreen from '../screens/SharedScreens/ShowProfileScreen.js';
-import EditProfileScreen from '../screens/SharedScreens/EditProfileScereen.js';
-import CreateProfileScreen from '../screens/SharedScreens/CreateProfileScreen.js';
-
-import AllEventAttendanceScreen from '../screens/OrganizerScreens/AllEventAttendanceScreen.js';
-import AllDiscountsScreen from '../screens/OrganizerScreens/GetAllDiscountsScreen.js';
-import AddNewDiscountScreen from '../screens/OrganizerScreens/AddNewDiscountScreen.js';
-
-import BuyTicketScreen from '../screens/UserScreens/BuyticketScreen.js';
-import TicketInfoScreen from '../screens/UserScreens/TicketInformationScreen.js';
-import UserTicketScreen from '../screens/UserScreens/UserTicketsScreen.js';
-import UserDiscountsScreen from '../screens/UserScreens/UserDiscountsScreen.js';
-
 import LoginMainRoleScreen from '../screens/LoginSigninScreens/LoginMain';
 import NavigatorForUser from './NavigatorUser';
 import OrganizerSigninScreen from '../screens/LoginSigninScreens/loginForOrganizer';
+import SigninScreen from '../../screens/signinScreen';
+import UserDiscountsScreen from '../screens/UserScreens/UserDiscountsScreen';
+import UserTicketScreen from '../screens/UserScreens/UserTicketsScreen';
+import TicketInfoScreen from '../screens/UserScreens/BuyticketScreen';
+import EditProfileScreen from '../screens/SharedScreens/EditProfileScereen';
+import ShowProfileScreen from '../screens/SharedScreens/ShowProfileScreen';
+import AddNewDiscountScreen from '../screens/OrganizerScreens/AddNewDiscountScreen';
+import AllDiscountsScreen from '../screens/OrganizerScreens/GetAllDiscountsScreen';
+import AllEventAttendanceScreen from '../screens/OrganizerScreens/AllEventAttendanceScreen';
+import CreateProfileScreen from '../screens/SharedScreens/CreateProfileScreen';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
@@ -66,7 +60,6 @@ export default function AppNavigator() {
         component={NavigatorForUser}
         options={{headerShown: false}}
       />
-      />
       <Stack.Screen
         name="PayPalScreen"
         component={PayPal}
@@ -104,7 +97,7 @@ export default function AppNavigator() {
       />
       <Stack.Screen
         name="BuyTicket"
-        component={BuyTicketScreen}
+        component={UserTicketScreen}
         options={{headerShown: false}}
       />
       <Stack.Screen

@@ -16,24 +16,29 @@ import {CommonActions} from '@react-navigation/native';
 import TextInput from '@react-native-material/core/src/TextInput';
 import IconButton from '@react-native-material/core/src/IconButton';
 import Button from '@react-native-material/core/src/Button';
-import {api, BASE_URL} from "../Api";
+import {api, BASE_URL} from '../Api';
+import {
+  getCredential,
+  isOrganizer,
+  storeCredential,
+} from '../../../utils/Storage';
 
 const LogoElement = () => (
-    <View style={styles.logoContainer}>
-      <Image
-          source={require('../../assets/Images/logo1.jpg')}
-          style={styles.logoPic}
-      />
-    </View>
+  <View style={styles.logoContainer}>
+    <Image
+      source={require('../../assets/Images/logo1.jpg')}
+      style={styles.logoPic}
+    />
+  </View>
 );
 
 const SignUpLink = ({navigation}) => (
-    <View style={styles.signUplinkContainer}>
-      <Text style={styles.linkText}>Don't have an account? </Text>
-      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-        <Text style={[styles.linkText, {color: '#626df8'}]}>Sign Up</Text>
-      </TouchableOpacity>
-    </View>
+  <View style={styles.signUplinkContainer}>
+    <Text style={styles.linkText}>Don't have an account? </Text>
+    <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+      <Text style={[styles.linkText, {color: '#626df8'}]}>Sign Up</Text>
+    </TouchableOpacity>
+  </View>
 );
 
 const SigninScreen = ({navigation}) => {
@@ -43,27 +48,6 @@ const SigninScreen = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorLogin, setErrorLogin] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
-
-    // useEffect(() => {
-    //     const checkCredential = async () => {
-    //         const credentials = await getCredential();
-    //         if (credentials?.token) {
-    //             navigation.reset({
-    //                 index: 0,
-    //                 routes: [{ name: 'RootHomeScreen' }],
-    //             });
-    //         } else {
-    //             navigation.reset({
-    //                 index: 0,
-    //                 routes: [{ name: 'Signin' }],
-    //             });
-    //         }
-    //     };
-    //
-    //     checkCredential();
-    // }, []);
-
 
   const validateInputs = () => {
     let error = {};
@@ -82,40 +66,34 @@ const SigninScreen = ({navigation}) => {
     }
 
     try {
-      const response = await axios.post(
-        'https://01a5-37-123-66-6.ngrok-free.app/api/event-manager/auth/login',
+      const response = await api.post(
+        `${BASE_URL}/api/event-manager/auth/login`,
         {
           username: userName,
           password: pass,
         },
       );
-        try {
-          const response = await api.post(
-              `${BASE_URL}/api/event-manager/auth/login`,
-              {
-                username: userName,
-                password: pass,
-              }
-          );
-          console.log(response.data);
-      // const response = await axios.post(
-      //     "https://db03-37-123-66-6.ngrok-free.app/api/event-manager/auth/login",
-      //     {
-      //       username: userName,
-      //       password: pass,
-      //     }
-      // );
 
-      console.log('Username:', userName, 'Password:', pass);
       console.log('✅ Login Success', response.data);
       await storeCredential(response.data);
-      navigation.popTo('RootHomeScreen');
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'RootHomeScreen'}],
-        }),
-      );
+
+      if (await isOrganizer()) {
+        navigation.popTo('list');
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'list'}],
+          }),
+        );
+      } else {
+        navigation.popTo('RootHomeScreen');
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'RootHomeScreen'}],
+          }),
+        );
+      }
     } catch (error) {
       console.log('❌ Axios Error', error.message);
       if (error.response) {
@@ -149,58 +127,60 @@ const SigninScreen = ({navigation}) => {
 
   if (isLoading) {
     return (
-        <SafeAreaView style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#626df8" />
-          <Text>Loading...</Text>
-        </SafeAreaView>
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#626df8" />
+        <Text>Loading...</Text>
+      </SafeAreaView>
     );
   }
 
   return (
-      <View style={styles.container}>
-        <LogoElement />
-        <TextInput
-            label="User Name"
-            variant="outlined"
-            value={userName}
-            onChangeText={setUserName}
-            leading={(props) => <Icon name="person-outline" {...props} />}
-        />
-        {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
+    <View style={styles.container}>
+      <LogoElement />
+      <TextInput
+        label="User Name"
+        variant="outlined"
+        value={userName}
+        onChangeText={setUserName}
+        leading={props => <Icon name="person-outline" {...props} />}
+      />
+      {errors.username && (
+        <Text style={styles.errorText}>{errors.username}</Text>
+      )}
 
-        <TextInput
-            label="Password"
-            variant="outlined"
-            value={pass}
-            onChangeText={setPass}
-            secureTextEntry={!showPassword}
-            leading={(props) => <Icon name="lock-closed-outline" {...props} />}
-            trailing={(props) => (
-                <IconButton
-                    onPress={() => setShowPassword(!showPassword)}
-                    icon={(iconProps) => (
-                        <Icon
-                            name={showPassword ? 'eye-off' : 'eye'}
-                            size={24}
-                            color={iconProps.color}
-                        />
-                    )}
-                    {...props}
-                />
+      <TextInput
+        label="Password"
+        variant="outlined"
+        value={pass}
+        onChangeText={setPass}
+        secureTextEntry={!showPassword}
+        leading={props => <Icon name="lock-closed-outline" {...props} />}
+        trailing={props => (
+          <IconButton
+            onPress={() => setShowPassword(!showPassword)}
+            icon={iconProps => (
+              <Icon
+                name={showPassword ? 'eye-off' : 'eye'}
+                size={24}
+                color={iconProps.color}
+              />
             )}
-        />
-        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+            {...props}
+          />
+        )}
+      />
+      {errors.password && (
+        <Text style={styles.errorText}>{errors.password}</Text>
+      )}
 
-        <Button
-            style={styles.signInButton}
-            title="Login"
-            onPress={handleLogin}
-        />
+      <Button style={styles.signInButton} title="Login" onPress={handleLogin} />
 
-        <SignUpLink navigation={navigation} />
-      </View>
+      <SignUpLink navigation={navigation} />
+    </View>
   );
-}
+};
+
+export default SigninScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -254,10 +234,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     paddingTop: StatusBar.currentHeight,
   },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
-});};
+});
