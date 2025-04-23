@@ -115,7 +115,7 @@ const HomeScreen = ({navigation}) => {
             <View>
               <Text style={styles.locationLabel}>Welcome</Text>
               <Text style={styles.locationValue}>
-                {userData?.firstName || 'John'} {userData?.lastName || 'Doe'}
+                {userData?.firstName || 'Guest'} {userData?.lastName || ' '}
               </Text>
             </View>
             <TouchableOpacity onPress={handleLogout}>
