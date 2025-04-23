@@ -187,7 +187,7 @@ const ListEventScreen = ({navigation}) => {
           />
           <View style={{flex: 1}}>
             <Text style={styles.organizerName}>
-              Welcome, {userData?.firstName || 'Gaest'}{' '}
+              Welcome, {userData?.firstName || 'Guest'}{' '}
               {userData?.lastName || ''}
             </Text>
             <Text style={styles.dateText}>{today}</Text>
