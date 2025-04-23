@@ -20,7 +20,7 @@ import {RootStackParamList} from "../navigation/RootStackParamList.ts";
 
 
 
-export const BASE_URL = "https://19c5-149-200-133-207.ngrok-free.app";
+export const BASE_URL = "https://f889-109-107-227-240.ngrok-free.app";
 
 export  const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
