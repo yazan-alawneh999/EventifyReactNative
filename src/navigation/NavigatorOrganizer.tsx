@@ -7,9 +7,8 @@ import ListEventScreen from '../screens/Home/HomeForOrganizer/ListEventScreen';
 import SignupScreen from '../screens/LoginSigninScreens/signupScreen';
 import {RootStackParamList} from './RootStackParamList';
 import UpdateEventScreen from '../screens/Home/HomeForOrganizer/EditEvent';
-import SigninScreen from "../screens/LoginSigninScreens/signinScreen";
-import {ScanScreen} from "../screens/QRCode/ScanScreen.tsx";
-
+import SigninScreen from '../screens/LoginSigninScreens/signinScreen';
+import {ScanScreen} from '../screens/QRCode/ScanScreen.tsx';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -33,6 +32,11 @@ const NavigatorForOrganizer = () => {
       <Stack.Screen
         name="Signup"
         component={SignupScreen}
+        options={{headerShown: false, title: 'Signup'}}
+      />
+      <Stack.Screen
+        name="ShowProfileScreen"
+        component={ProfileScreen}
         options={{headerShown: false, title: 'Signup'}}
       />
     </Stack.Navigator>

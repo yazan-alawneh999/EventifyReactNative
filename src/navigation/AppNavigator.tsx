@@ -24,13 +24,13 @@ import UserTicketScreen from '../screens/UserScreens/UserTicketsScreen.js';
 import UserDiscountsScreen from '../screens/UserScreens/UserDiscountsScreen.js';
 import NavigatorForOrganizer from './NavigatorOrganizer';
 import NavigatorUser from './NavigatorUser.tsx';
-import {SignupScreenOrganizer} from "../screens/LoginSigninScreens/signupScreenOrganizer";
+import {SignupScreenOrganizer} from '../screens/LoginSigninScreens/signupScreenOrganizer';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
   return (
-    <Stack.Navigator initialRouteName="RootSplashScreen">
+    <Stack.Navigator initialRouteName="OrgnizerScreens">
       <Stack.Screen
         name="RootSplashScreen"
         component={SplashScreen}
@@ -69,7 +69,7 @@ export default function AppNavigator() {
         options={{headerShown: false, title: 'Signup'}}
       />
 
-        <Stack.Screen
+      <Stack.Screen
         name="SignupOrganizer"
         component={SignupScreenOrganizer}
         options={{headerShown: false, title: 'Signup'}}
