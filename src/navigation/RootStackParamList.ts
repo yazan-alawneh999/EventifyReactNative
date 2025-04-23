@@ -7,6 +7,7 @@ export type RootStackParamList = {
   RootLoginScreen: undefined;
   RootSignupScreen: undefined;
   Signup: undefined;
+  SignupOrganizer: undefined;
   Signin: undefined;
   PayPalScreen: undefined;
   user: undefined;

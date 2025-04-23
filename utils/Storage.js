@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from "jwt-decode";
+import {api, resetApiHeaders} from "../src/screens/Api";
 
 export const storeCredential = async value => {
     try {
@@ -47,7 +48,9 @@ export const isOrganizer = async () => {
 
 export const logout = async () => {
     try {
+         resetApiHeaders()
         await AsyncStorage.removeItem('credential');
+
     } catch (e) {
         console.error('Error removing data', e);
     }
