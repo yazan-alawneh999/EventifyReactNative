@@ -311,7 +311,6 @@ const CreateProfileScreen = ({navigation}) => {
           <OrgBottomNavBar navigation={navigation} />
         )}
       </KeyboardAvoidingView>
-      <BottomNavBar navigation={navigation} />
     </SafeAreaView>
   );
 };
