@@ -8,11 +8,9 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import axios from 'axios';
 import {Picker} from '@react-native-picker/picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-
-const BASE_URL = 'http://YOUR_BASE_URL_HERE';
+import { BASE_URL,api } from '../../Api';
 
 const UpdateEventScreen = ({route}) => {
   const {eventId} = route.params;
@@ -35,14 +33,15 @@ const UpdateEventScreen = ({route}) => {
 
   useEffect(() => {
     fetchEventDetails();
-  }, []);
+  });
 
   const fetchEventDetails = async () => {
     try {
-      const response = await axios.get(
+      const response = await api.get(
         `${BASE_URL}/api/Event/getEventByID/${eventId}`,
       );
       setEventData(response.data);
+      
     } catch (error) {
       console.error(error);
       Alert.alert('Error', 'Failed to load event data');
@@ -51,7 +50,7 @@ const UpdateEventScreen = ({route}) => {
 
   const handleUpdateEvent = async () => {
     try {
-      await axios.put(`${BASE_URL}/api/Event/UpdateEvent`, eventData);
+      await api.put(`${BASE_URL}/api/Event/UpdateEvent`, eventData);
       Alert.alert('Success', 'Event updated successfully.');
     } catch (error) {
       console.error(error);
@@ -141,7 +140,8 @@ const UpdateEventScreen = ({route}) => {
       <TextInput
         style={styles.input}
         keyboardType="numeric"
-        value={eventData.price.toString()}
+        placeholderTextColor={'black'}
+        placeholder={eventData.price.toString()}
         onChangeText={text =>
           setEventData({...eventData, price: parseFloat(text) || 0})
         }
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: 'black',
     padding: 10,
     borderRadius: 8,
     marginBottom: 10,
