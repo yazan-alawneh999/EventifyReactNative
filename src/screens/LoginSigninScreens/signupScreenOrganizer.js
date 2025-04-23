@@ -20,6 +20,7 @@ import IconButton from '@react-native-material/core/src/IconButton';
 import Button from '@react-native-material/core/src/Button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {BASE_URL, resetApiHeaders} from "../Api";
+import {getCredential} from "../../../utils/Storage";
 
 
 const TopBar = ({navigation}) => {
@@ -34,19 +35,6 @@ const TopBar = ({navigation}) => {
         />
       </TouchableOpacity>
     </View>
-  );
-};
-
-const SignupAsOrganizerLink = ({navigation}) => {
-  return (
-      <View style={styles.signinlinkContainer}>
-        <Text style={styles.linkText}>Want to create events? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('SignupOrganizer')}>
-          <Text style={[styles.linkText, {color: '#626df8'}]}>
-            Sign up as Organizer
-          </Text>
-        </TouchableOpacity>
-      </View>
   );
 };
 
@@ -65,13 +53,14 @@ const SignupInputs = ({navigation}) => {
     if (!validateInputs()) return;
     setIsLoading(true);
 
+
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/event-manager/auth/register`,
+          `${BASE_URL}/api/event-manager/auth/register`,
         {
           username: userName,
           password: pass,
-          roleID: 3,
+          roleID: 2,
         },
         {
           headers: {
@@ -82,8 +71,8 @@ const SignupInputs = ({navigation}) => {
 
       if (response.status >= 200 && response.status < 300) {
         setIsLoading(false);
-        resetApiHeaders();
         navigation.navigate('Signin');
+        resetApiHeaders();
       } else {
         setErrorSignUp(`Signup failed with status: ${response.status}`);
       }
@@ -216,26 +205,17 @@ const SigninLink = ({navigation}) => {
   );
 };
 
-export default function SignUpScreen({navigation}) {
+export  function SignupScreenOrganizer({navigation}) {
 
 
   return (
-  //   <View
-  //     style={{flex: 1, alignContent: 'space-between', backgroundColor: '#fff'}}>
-  //     <View style={styles.container}>
-  //       <SignupInputs navigation={navigation} />
-  //     </View>
-  //     <SigninLink navigation={navigation} />
-  //   </View>
-  // );
-      <View
-          style={{flex: 1, alignContent: 'space-between', backgroundColor: '#fff'}}>
-        <View style={styles.container}>
-          <SignupInputs navigation={navigation} />
-        </View>
-        <SigninLink navigation={navigation} />
-        <SignupAsOrganizerLink navigation={navigation} />
+    <View
+      style={{flex: 1, alignContent: 'space-between', backgroundColor: '#fff'}}>
+      <View style={styles.container}>
+        <SignupInputs navigation={navigation} />
       </View>
+      <SigninLink navigation={navigation} />
+    </View>
   );
 }
 
@@ -344,13 +324,5 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     marginBottom: 10,
-  },
-  signinlinkContainerOrg: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    height: '5%',
-    width: '100%',
-    marginTop: 10,
   },
 });
