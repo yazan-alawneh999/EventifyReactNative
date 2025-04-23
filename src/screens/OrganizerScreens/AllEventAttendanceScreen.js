@@ -109,7 +109,7 @@ return (
                     <TouchableOpacity onPress={()=>navigation.goBack()}>
                         <Ionicons name="arrow-back" size={24} color="black"/>
                     </TouchableOpacity>
-                    <Text style={styles.headerText}>User Tickets</Text>
+                    <Text style={styles.headerText}>Event Attindance</Text>
                 </View>
 
                 {attindanceList?.length > 0  ?
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
 
     headerText: {
         fontSize: 18,
-        marginLeft:'30%',
+        marginLeft:'24%',
     },
 
 
