@@ -22,11 +22,13 @@ const categories = [
 ];
 
 const HomeScreen = ({navigation}) => {
-  const [events, setEvents] =  useState<Event[] | null>(null);
+  const [events, setEvents] = useState<Event[] | null>(null);
   const [userID, setUserID] = useState(null);
   const [userData, setUserData] = useState<User | null>(null);
 
-  {/*todo : use these types */}
+  {
+    /*todo : use these types */
+  }
   type User = {
     firstName: string | null;
     lastName: string | null;
@@ -36,7 +38,7 @@ const HomeScreen = ({navigation}) => {
     phoneNumber: string | null;
     roleID: number;
     roleName: string;
-    profileID: string | null
+    profileID: string | null;
     createdAt: string;
     username: string;
     profileImage: string | null;
@@ -55,7 +57,6 @@ const HomeScreen = ({navigation}) => {
     price: number;
     createdAt: string; // ISO datetime string
   };
-
 
   useEffect(() => {
     const fetchUserID = async () => {
@@ -114,7 +115,7 @@ const HomeScreen = ({navigation}) => {
             <View>
               <Text style={styles.locationLabel}>Welcome</Text>
               <Text style={styles.locationValue}>
-                {userData?.firstName } {userData?.lastName}  {' '}
+                {userData?.firstName || 'Guest'} {userData?.lastName || ' '}
               </Text>
             </View>
             <TouchableOpacity onPress={handleLogout}>
@@ -122,18 +123,14 @@ const HomeScreen = ({navigation}) => {
             </TouchableOpacity>
           </View>
 
-          <View style={styles.searchBar}>
+          {/* Wrap the search input with TouchableOpacity */}
+          <TouchableOpacity
+            style={styles.filterBtn}
+            onPress={() => {
+              navigation.navigate('AllEventsScreen'); // Navigate to the "AllEventsScreen"
+            }}>
             <Icon name="search" size={20} color="#ccc" />
-            <TextInput
-              placeholder="Search..."
-              placeholderTextColor="#ccc"
-              style={styles.searchInput}
-            />
-            <TouchableOpacity style={styles.filterBtn}>
-              <Icon name="filter" size={20} color="#fff" />
-              <Text style={{color: '#fff', marginLeft: 5}}>Filters</Text>
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
 
           <ScrollView
             horizontal
@@ -187,32 +184,33 @@ const HomeScreen = ({navigation}) => {
             ))}*/}
             {/*todo: use this map  */}
             {events?.map((event, index) => (
-                <View key={index} style={styles.eventCardNew}>
-                  <Text style={styles.eventTitle}>{event.eventName}</Text>
-                  <Image
-                      source={require('../../../assets/Images/event.jpg')}
-                      style={styles.eventImageNew}
-                  />
-                  <Text style={styles.eventDescription}>{event.description}</Text>
-                  <TouchableOpacity
-                      style={styles.detailsBtn}
-                      onPress={() =>
-                          navigation.navigate('EventDetailsScreen', {
-                            eventID: event.eventID,
-                          })
-                      }>
-                    <Text style={{color: '#fff', fontWeight: 'bold'}}>More Details</Text>
-                  </TouchableOpacity>
-                </View>
+              <View key={index} style={styles.eventCardNew}>
+                <Text style={styles.eventTitle}>{event.eventName}</Text>
+                <Image
+                  source={require('../../../assets/Images/event.jpg')}
+                  style={styles.eventImageNew}
+                />
+                <Text style={styles.eventDescription}>{event.description}</Text>
+                <TouchableOpacity
+                  style={styles.detailsBtn}
+                  onPress={() =>
+                    navigation.navigate('EventDetailsScreen', {
+                      eventID: event.eventID,
+                    })
+                  }>
+                  <Text style={{color: '#fff', fontWeight: 'bold'}}>
+                    More Details
+                  </Text>
+                </TouchableOpacity>
+              </View>
             ))}
-
           </ScrollView>
         </View>
 
         {/*todo: remove this code or fix it */}
 
         {/* ✅ Event About You Section */}
-  {/*      <View style={styles.section}>
+        {/*      <View style={styles.section}>
           <View style={styles.rowBetween}>
             <Text style={styles.sectionTitle}>Event About You</Text>
             <TouchableOpacity
