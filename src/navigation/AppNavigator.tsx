@@ -29,7 +29,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
   return (
-    <Stack.Navigator initialRouteName="UserScreens">
+    <Stack.Navigator initialRouteName="RootSplashScreen">
       <Stack.Screen
         name="RootSplashScreen"
         component={SplashScreen}
