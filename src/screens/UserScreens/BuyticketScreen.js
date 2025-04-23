@@ -42,14 +42,14 @@ export default function TicketInfoScreen({ route,navigation }) {
   const [status, setStatus] = useState('Pending');
 
   const handleResponse = (data) => {
-      BuyTicket();
+
         if (data.title === 'success') {
-        
+
         setShowModal(false);
         setStatus('Payment has done successfully');
         console.log("onPaypal Success")
         BuyTicket();
-        
+
     } else if (data.title === 'cancel') {
         setShowModal(false);
         setStatus('Cancelled');
@@ -169,7 +169,7 @@ const changeQuantity = (delta) => {
             >
                 <WebView
                     source={{
-                        uri: `https://28c3-37-123-65-107.ngrok-free.app/?amount=${TotalPrice}`,
+                        uri: `https://d918-149-200-133-207.ngrok-free.app/?amount=${TotalPrice}`,
                     }}
                     onNavigationStateChange={handleResponse}
                     injectedJavaScript={'document.f1.submit()'}

@@ -13,7 +13,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import BottomNavBar from '../../../components/BottomNavbarForUser';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {getCredential, logout} from '../../../../utils/Storage';
-import {api, BASE_URL} from '../../Api';
+import {api, BASE_URL, resetApiHeaders} from '../../Api';
+import {reset} from "react-native-svg/lib/typescript/lib/Matrix2D";
 
 const categories = [
   {title: 'Sports', color: '#F8634C', icon: 'basketball-outline'},
@@ -102,6 +103,7 @@ const HomeScreen = ({navigation}) => {
 
   const handleLogout = async () => {
     await logout();
+    resetApiHeaders()
     navigation.navigate('Signin');
   };
 

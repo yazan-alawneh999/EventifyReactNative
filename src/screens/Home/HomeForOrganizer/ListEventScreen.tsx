@@ -10,12 +10,13 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import BottomNavBarOrganizer from '../../../components/BottomNavbarForOrganizer';
-import {api, BASE_URL} from '../../Api';
+import {api, BASE_URL, resetApiHeaders} from '../../Api';
 import {getCredential, logout} from '../../../../utils/Storage';
 
 const ListEventScreen = ({navigation}) => {
   const [events, setEvents] = useState([]);
   const [userID, setUserID] = useState(null);
+  const [eventId, setEventId] = useState(0);
   const [userData, setUserData] = useState(null);
   const today = new Date().toLocaleDateString();
 
@@ -58,8 +59,8 @@ const ListEventScreen = ({navigation}) => {
         // تحقق من البيانات، وإذا كانت فارغة أو غير موجودة، تعيين القيم الافتراضية
         if (!response.data) {
           setUserData({
-            firstName: 'Ali',
-            lastName: 'Ahmad',
+            firstName: 'Guest',
+            lastName: '',
             city: 'Amman',
             age: 25,
             email: 'ali1@example.com',
@@ -77,12 +78,16 @@ const ListEventScreen = ({navigation}) => {
     fetchUser();
   }, [userID]);
 
+
+
+
   const handleLogout = async () => {
     await logout();
+    resetApiHeaders()
     navigation.navigate('Signin');
   };
 
-  const handleDeleteEvent = eventID => {
+  const handleDeleteEvent = () => {
     Alert.alert(
       'Confirm Deletion',
       'Are you sure you want to delete this event?',
@@ -92,20 +97,23 @@ const ListEventScreen = ({navigation}) => {
           text: 'Delete',
           onPress: async () => {
             try {
-              await api.delete(
-                `${BASE_URL}/api/Event/DeleteEvent?ID=${eventID}`,
-              );
-              await fetchEvents();
+              await api.delete(`${BASE_URL}/api/Event/deleteEvent?ID=${eventId}`);
+
+              const refreshed = await api.get(`${BASE_URL}/api/Location/getallPinLocationEachEvent`);
+              setEvents(refreshed.data); // 🔁 Force update events list
 
               Alert.alert('Deleted', 'Event has been deleted successfully.');
             } catch (error) {
               console.error('Error deleting event:', error);
             }
-          },
+          }
+          ,
           style: 'destructive',
         },
       ],
     );
+
+
   };
 
   const handleCreateEvent = () => {
@@ -159,13 +167,17 @@ const ListEventScreen = ({navigation}) => {
           <TouchableOpacity
             style={styles.editBtn}
             onPress={() =>
-              navigation.navigate('EditEvent', {eventId: item.eventID})
+              navigation.navigate('EditEvent', {
+                eventId: item.eventID}
+              )
             }>
             <Text style={styles.btnText}>Edit</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.deleteBtn}
-            onPress={() => handleDeleteEvent(item.eventID)}>
+            onPress={() =>{
+              setEventId(item.eventID);
+              handleDeleteEvent()}}>
             <Text style={styles.btnText}>Delete</Text>
           </TouchableOpacity>
         </View>
@@ -187,14 +199,12 @@ const ListEventScreen = ({navigation}) => {
           />
           <View style={{flex: 1}}>
             <Text style={styles.organizerName}>
-              Welcome, {userData?.firstName || 'Ali'}{' '}
-              {userData?.lastName || 'Ahmad'}
+              Welcome, {userData?.firstName || 'Guest'}{' '}
+              {userData?.lastName }
             </Text>
             <Text style={styles.dateText}>{today}</Text>
           </View>
-          <TouchableOpacity onPress={handleLogout}>
-            <Ionicons name="log-out-outline" size={24} color="white" />
-          </TouchableOpacity>
+
         </View>
 
         {/* عنوان الصفحة في المنتصف */}
@@ -205,7 +215,7 @@ const ListEventScreen = ({navigation}) => {
         data={events}
         renderItem={renderEventCard}
         keyExtractor={item =>
-          item.eventID ? item.eventID.toString() : String(Math.random())
+          item.eventID ? item.eventID : String(Math.random())
         }
         contentContainerStyle={{paddingBottom: 120}}
       />

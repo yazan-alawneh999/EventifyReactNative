@@ -28,8 +28,6 @@ export const api = axios.create({
 });
 export const resetApiHeaders = () => {
   delete api.defaults.headers.common['Authorization'];
-  // You can also reset other headers if needed
-  // delete api.defaults.headers.common['Custom-Header'];
 };
 api.interceptors.request.use(
   async config => {
@@ -70,18 +68,3 @@ api.interceptors.response.use(
   },
 );
 
-// api.interceptors.request.use(async (config) => {
-//     console.log('[Request Interceptor]', config.url);
-//     return config;
-// });
-
-// api.interceptors.response.use(
-//     (response) => {
-//         console.log('[Response Interceptor]', response.status);
-//         return response;
-//     },
-//     (error) => {
-//         console.error('[Response Error]', error);
-//         return Promise.reject(error);
-//     }
-// );

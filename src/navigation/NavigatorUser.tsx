@@ -15,6 +15,7 @@ import UserDiscountsScreen from '../screens/UserScreens/UserDiscountsScreen.js';
 import ShowProfileScreen from '../screens/SharedScreens/ShowProfileScreen.js';
 import EditProfileScreen from '../screens/SharedScreens/EditProfileScereen.js';
 import CreateProfileScreen from '../screens/SharedScreens/CreateProfileScreen.js';
+import SigninScreen from "../screens/LoginSigninScreens/signinScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,7 +30,11 @@ const NavigatorForUser = () => {
       <Stack.Screen name="user" component={Profile} />
       <Stack.Screen name="AllEventsScreen" component={AllEventsScreen} />
       <Stack.Screen name="EventDetailsScreen" component={EventDetailsScreen} />
-
+        <Stack.Screen
+            name="Signin"
+            component={SigninScreen}
+            options={{headerShown: false}}
+        />
       <Stack.Screen
         name="BuyTicket"
         component={BuyTicketScreen}
