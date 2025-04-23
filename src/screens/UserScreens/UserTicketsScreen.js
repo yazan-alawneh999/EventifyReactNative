@@ -115,10 +115,10 @@ const UserTicketScreen = ({navigation}) => {
         const credentials = await getCredential();
         const token = (await getCredential()).token;
         setUserId(credentials.userId);
-          const response = await axios.get(`${BASE_URL}/api/BuyTicket/GetAllTicketsByUserID/${userID}`,
+          const response = await axios.get(`${BASE_URL}/api/BuyTicket/GetAllTicketsByUserID/${credentials.userId}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             },
           });
           const data = response.data;

@@ -1,5 +1,3 @@
-/* eslint-disable no-alert */
-/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {
@@ -21,7 +19,7 @@ import UserBottomNavBar from '../../components/BottomNavbarForUser.tsx';
 import OrgBottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
 import SuccessDialog from '../../components/SucesssPopupDialog';
 import FailedDialog from '../../components/FailedPopupDialog.js';
-import {BASE_URL, api} from '../Api';
+import {BASE_URL} from '../Api';
 import {getCredential} from '../../../utils/Storage.js';
 
 const {width, height} = Dimensions.get('window');
@@ -138,6 +136,7 @@ const EditProfileScreen = ({navigation}) => {
       formData.append('PhoneNumber', phoneNumber);
       formData.append('RoleID', RoleID);
       formData.append('Username', userNamr);
+      // Removed duplicate UpdateProfile declaration
 
       if (profileImage) {
         formData.append('ImageFile', {

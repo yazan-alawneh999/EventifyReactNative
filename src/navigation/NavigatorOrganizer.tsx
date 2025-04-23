@@ -7,8 +7,6 @@ import ListEventScreen from '../screens/Home/HomeForOrganizer/ListEventScreen';
 import SignupScreen from '../screens/LoginSigninScreens/signupScreen';
 import {RootStackParamList} from './RootStackParamList';
 import UpdateEventScreen from '../screens/Home/HomeForOrganizer/EditEvent';
-import LoginMainRoleScreen from '../screens/LoginSigninScreens/LoginMain';
-import OrganizerSigninScreen from '../screens/LoginSigninScreens/loginForOrganizer';
 import SigninScreen from '../../screens/signinScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -16,7 +14,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const NavigatorForOrganizer = () => {
   return (
     <Stack.Navigator
-      initialRouteName="LoginMainRole"
+      initialRouteName="list"
       screenOptions={{headerShown: false}}>
       <Stack.Screen name="list" component={ListEventScreen} />
       <Stack.Screen name="CreateEvent" component={CreatNowEventScreen} />
@@ -33,16 +31,6 @@ const NavigatorForOrganizer = () => {
         name="Signup"
         component={SignupScreen}
         options={{headerShown: false, title: 'Signup'}}
-      />
-      <Stack.Screen
-        name="LoginMainRole"
-        component={LoginMainRoleScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="OrganizerSigninScreen"
-        component={OrganizerSigninScreen}
-        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );

@@ -92,6 +92,7 @@ const OrganizerSigninScreen = ({navigation}) => {
         CommonActions.reset({
           index: 0,
           routes: [{name: 'list'}],
+          ة,
         }),
       );
     } catch (error) {

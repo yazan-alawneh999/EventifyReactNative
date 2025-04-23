@@ -18,7 +18,7 @@ const BottomNavBar = () => {
 
   const icons = [
     {name: 'home', screen: 'Home'},
-    {name: 'calendar', screen: 'Events'},
+    {name: 'calendar', screen: 'BuyTicket'},
     {name: 'map-pin', screen: 'Map'},
     {name: 'user', screen: 'ShowProfile'},
   ];

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,15 +7,57 @@ import {
   TouchableOpacity,
   StyleSheet,
   ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-const EventDetailsScreen = () => {
+import {api, BASE_URL} from '../../Api';
+
+const EventDetailsScreen = ({route}) => {
   const navigation = useNavigation();
+  const {eventID} = route.params;
+
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const response = await api.get(
+          `${BASE_URL}/api/Event/getEventByID/${eventID}`,
+        );
+        setEvent(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load event.');
+        setLoading(false);
+      }
+    };
+
+    fetchEvent();
+  }, [eventID]);
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#6366F1" />
+      </View>
+    );
+  }
+
+  if (error || !event) {
+    return (
+      <View style={styles.center}>
+        <Text style={{color: 'red'}}>{error || 'No event found'}</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
-      {/* صورة الحدث + عنوان */}
+      {/* صورة الحدث الثابتة + عنوان */}
       <ImageBackground
         source={require('../../../assets/Images/event.jpg')}
         style={styles.headerImage}>
@@ -29,50 +71,40 @@ const EventDetailsScreen = () => {
         </View>
       </ImageBackground>
 
-      {/* معلومات أساسية */}
+      {/* تفاصيل الحدث */}
       <View style={styles.card}>
-        <Text style={styles.eventTitle}>International Band Music Concert</Text>
+        <Text style={styles.eventTitle}>{event.eventName}</Text>
 
         <View style={styles.infoRow}>
           <Ionicons name="calendar-outline" size={24} color="#6366F1" />
           <View style={styles.infoText}>
-            <Text style={styles.infoTitle}>14 December, 2021</Text>
-            <Text style={styles.infoSubtitle}>Tuesday, 4:00PM - 9:00PM</Text>
-          </View>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Ionicons name="location-outline" size={24} color="#6366F1" />
-          <View style={styles.infoText}>
-            <Text style={styles.infoTitle}>Gala Convention Center</Text>
-            <Text style={styles.infoSubtitle}>36 Guild Street London, UK</Text>
+            <Text style={styles.infoTitle}>
+              {new Date(event.eventDate).toDateString()}
+            </Text>
+            <Text style={styles.infoSubtitle}>
+              {new Date(event.eventTime).toLocaleTimeString()}
+            </Text>
           </View>
         </View>
 
         <View style={styles.infoRow}>
           <Image
-            source={{uri: 'https://randomuser.me/api/portraits/men/32.jpg'}}
+            source={{
+              uri: 'https://randomuser.me/api/portraits/men/32.jpg',
+            }}
             style={styles.organizerImage}
           />
-          <View style={styles.infoText}>
-            <Text style={styles.infoTitle}>Ashfaq Sayem</Text>
-            <Text style={styles.infoSubtitle}>Organizer</Text>
-          </View>
+
           <TouchableOpacity style={styles.followButton}>
             <Text style={styles.followText}>Follow</Text>
           </TouchableOpacity>
         </View>
 
-        {/* وصف الحدث */}
         <Text style={styles.aboutTitle}>About Event</Text>
-        <Text style={styles.aboutText}>
-          Enjoy your favorite dish and a lovely time with your friends and
-          family. Food from local food trucks will be available for purchase.
-        </Text>
+        <Text style={styles.aboutText}>{event.description}</Text>
 
-        {/* زر التذكرة */}
         <TouchableOpacity style={styles.buyButton}>
-          <Text style={styles.buyButtonText}>BUY TICKET $120</Text>
+          <Text style={styles.buyButtonText}>BUY TICKET ${event.price}</Text>
           <Ionicons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -86,6 +118,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerImage: {
     width: '100%',

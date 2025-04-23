@@ -10,6 +10,7 @@ import {
 import {WebView} from 'react-native-webview';
 import Geolocation from '@react-native-community/geolocation';
 import BottomNavBar from '../../../components/BottomNavbarForUser';
+import {api, BASE_URL} from '../../Api';
 
 const MapScreen = () => {
   const [location, setLocation] = useState<{
@@ -18,33 +19,7 @@ const MapScreen = () => {
   } | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
-
-  const events = [
-    {
-      id: 1,
-      title: 'Spring Festival',
-      description: 'An outdoor music celebration.',
-      latitude: 31.963158,
-      longitude: 35.930359,
-      date: '2025-04-25',
-    },
-    {
-      id: 2,
-      title: 'Tech Expo',
-      description: 'Latest technological innovations in Amman.',
-      latitude: 31.95,
-      longitude: 35.933333,
-      date: '2025-05-01',
-    },
-    {
-      id: 3,
-      title: 'Entrepreneurship Seminar',
-      description: 'Training sessions and workshops for entrepreneurs.',
-      latitude: 31.945,
-      longitude: 35.925,
-      date: '2025-05-10',
-    },
-  ];
+  const [events, setEvents] = useState<any[]>([]);
 
   const requestLocationPermission = useCallback(async () => {
     if (Platform.OS === 'android') {
@@ -61,6 +36,7 @@ const MapScreen = () => {
 
   useEffect(() => {
     requestLocationPermission();
+    fetchEvents();
   }, [requestLocationPermission]);
 
   const getLocation = () => {
@@ -76,71 +52,87 @@ const MapScreen = () => {
     );
   };
 
+  const fetchEvents = async () => {
+    try {
+      const response = await api.get(
+        `${BASE_URL}/api/Location/getallPinLocationEachEvent`,
+      );
+      setEvents(response.data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
   const filteredEvents = events.filter(event =>
-    event.title.toLowerCase().includes(searchTerm.toLowerCase()),
+    event.eventName.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const mapHtml = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-      <style>
-        html, body, #map { height: 100%; margin: 0; padding: 0; }
-      </style>
-    </head>
-    <body>
-      <div id="map"></div>
-      <script>
-        var map = L.map('map').setView([0, 0], 2);
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+      html, body, #map { height: 100%; margin: 0; padding: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      var map = L.map('map', { zoomControl: true }).setView([0, 0], 2);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
 
-        function updateMap(lat, lng) {
-          L.marker([lat, lng]).addTo(map)
-            .bindPopup("You are here").openPopup();
-        }
+      function updateMap(lat, lng) {
+        L.marker([lat, lng]).addTo(map)
+          .bindPopup("You are here").openPopup();
+      }
 
-        function addEvents(eventsJson) {
-          const events = JSON.parse(eventsJson);
-          const bounds = [];
+      function addEvents(eventsJson) {
+        const events = JSON.parse(eventsJson);
+        const bounds = [];
 
-          events.forEach(event => {
-            const marker = L.marker([event.latitude, event.longitude]).addTo(map);
-            marker.bindPopup(\`
-              <b>\${event.title}</b><br/>
-              \${event.description}<br/>
-              <i>\${event.date}</i>
-            \`);
+        events.forEach(event => {
+          const marker = L.marker([event.location.latitude, event.location.longitude]).addTo(map);
+          marker.bindPopup(\`
+            <b>\${event.eventName}</b><br/>
+            \${event.description}<br/>
+            <i>\${event.eventDate}</i>
+          \`);
 
-            // Adding click event to show event details
-            marker.on('click', function() {
-              window.ReactNativeWebView.postMessage(JSON.stringify(event));
-            });
-
-            bounds.push([event.latitude, event.longitude]);
+          // Send data back to React Native when clicking on a marker
+          marker.on('click', function() {
+            window.ReactNativeWebView.postMessage(JSON.stringify(event));
           });
 
-          if (bounds.length > 0) {
-            map.fitBounds(bounds, {padding: [50, 50]});
-          }
-        }
-
-        window.addEventListener('message', function(event) {
-          const eventData = JSON.parse(event.data);
-          const targetEvent = events.find(e => e.id === eventData.id);
-          if (targetEvent) {
-            map.setView([targetEvent.latitude, targetEvent.longitude], 15);
-          }
+          bounds.push([event.location.latitude, event.location.longitude]);
         });
-      </script>
-    </body>
-    </html>
-  `;
+
+        if (bounds.length > 0) {
+          map.fitBounds(bounds, {padding: [50, 50]});
+        }
+      }
+
+      // Disable click-to-drop-pin
+      map.on('click', function(e) {
+        // Do nothing intentionally
+      });
+
+      window.addEventListener('message', function(event) {
+        const eventData = JSON.parse(event.data);
+        const targetEvent = events.find(e => e.eventID === eventData.eventID);
+        if (targetEvent) {
+          map.setView([targetEvent.location.latitude, targetEvent.location.longitude], 15);
+        }
+      });
+    </script>
+  </body>
+  </html>
+`;
 
   const injectedJS = `
     ${location ? `updateMap(${location.latitude}, ${location.longitude});` : ''}
@@ -151,8 +143,8 @@ const MapScreen = () => {
   const handleMessage = (event: any) => {
     const eventDetails = JSON.parse(event.nativeEvent.data);
     Alert.alert(
-      eventDetails.title,
-      `${eventDetails.description}\n\nDate: ${eventDetails.date}`,
+      eventDetails.eventName,
+      `Organizer: ${eventDetails.organizerName}\nDescription: ${eventDetails.description}\nDate: ${eventDetails.eventDate}\nPrice: ${eventDetails.price}`,
     );
   };
 

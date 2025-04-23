@@ -10,44 +10,8 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import BottomNavBarOrganizer from '../../../components/BottomNavbarForOrganizer';
-import {useContext} from 'react';
-import {UserContext} from '../../../components/UserContext';
-import {logout} from '../../../../utils/Storage';
-
-const events = [
-  {
-    eventID: 1,
-    eventName: 'Tech Conference',
-    eventType: 'Conference',
-    eventTime: '2025-03-01T10:00:00',
-    eventDate: '2025-05-01T00:00:00',
-    eventStatus: 'Progressed',
-    description: 'Technology trends in AI & Cloud.',
-    capacity: 100,
-    price: 50,
-    location: {
-      address: 'The Boulevard Arjaan by Rotana',
-      latitude: 31.958,
-      longitude: 35.9101,
-    },
-  },
-  {
-    eventID: 2,
-    eventName: 'Music Festival',
-    eventType: 'Music',
-    eventTime: '2025-04-01T18:00:00',
-    eventDate: '2025-06-10T00:00:00',
-    eventStatus: 'Upcoming',
-    description: 'A celebration of sound and rhythm.',
-    capacity: 500,
-    price: 80,
-    location: {
-      address: 'Amman Amphitheatre',
-      latitude: 31.958,
-      longitude: 35.9101,
-    },
-  },
-];
+import {api, BASE_URL} from '../../Api';
+import {getCredential} from '../../../../utils/Storage';
 
 const ListEventScreen = ({navigation}) => {
   const [events, setEvents] = useState([]);
@@ -55,9 +19,78 @@ const ListEventScreen = ({navigation}) => {
   const [userData, setUserData] = useState(null);
   const today = new Date().toLocaleDateString();
 
-  const handleLogout = async () => {
-    await logout();
-    navigation.navigate('Signin');
+  const fetchEvents = async () => {
+    try {
+      const response = await api.get(
+        `${BASE_URL}/api/Location/getallPinLocationEachEvent`,
+      );
+      setEvents(response.data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserID = async () => {
+      try {
+        const credential = await getCredential();
+        setUserID(credential?.userid || null);
+      } catch (error) {
+        console.error('Error getting credential:', error);
+      }
+    };
+    fetchUserID();
+  }, []);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!userID) return;
+
+      try {
+        const response = await api.get(
+          `${BASE_URL}/api/event-manager/profile-details/${userID}`,
+        );
+        setUserData(response.data);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+
+    fetchUser();
+  }, [userID]);
+
+  const handleLogout = () => {
+    Alert.alert('Logout', 'You have been logged out.');
+  };
+
+  const handleDeleteEvent = eventID => {
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this event?',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Delete',
+          onPress: async () => {
+            try {
+              await api.delete(
+                `${BASE_URL}/api/Event/DeleteEvent?ID=${eventID}`,
+              );
+              await fetchEvents();
+
+              Alert.alert('Deleted', 'Event has been deleted successfully.');
+            } catch (error) {
+              console.error('Error deleting event:', error);
+            }
+          },
+          style: 'destructive',
+        },
+      ],
+    );
   };
 
   const handleCreateEvent = () => {

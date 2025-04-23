@@ -17,7 +17,6 @@ export type RootStackParamList = {
   ShowProfileScreen: undefined;
   NavigatorForUser: undefined;
   EditEvent: {eventId: string};
-  LoginMainRole: undefined;
   OrganizerSigninScreen: undefined;
   AllEventAttendanceScreen: undefined;
   AllDiscountsScreen: undefined;
@@ -31,4 +30,5 @@ export type RootStackParamList = {
   UserDiscountsScreen: undefined;
   OrgnizerScreens: undefined;
   UserScreens: undefined;
+  EventDetailsScreen: {eventId: string};
 };

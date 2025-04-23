@@ -18,7 +18,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {launchImageLibrary} from 'react-native-image-picker';
 import UserBottomNavBar from '../../components/BottomNavbarForUser.tsx';
 import OrgBottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
-import BottomNavBar from '../../components/BottomNavBarScreen.js';
 import SuccessDialog from '../../components/SucesssPopupDialog';
 import FailedDialog from '../../components/FailedPopupDialog.js';
 import {getCredential} from '../../../utils/Storage.js';
@@ -137,6 +136,7 @@ const CreateProfileScreen = ({navigation}) => {
 
       const response = await axios.post(
         `${BASE_URL}/api/event-manager/create-profile/${userId}`,
+        `${BASE_URL}/api/event-manager/create-profile/${userId}`,
         formData,
         {
           headers: {
@@ -153,7 +153,6 @@ const CreateProfileScreen = ({navigation}) => {
     } catch (error) {
       if (error.response) {
         console.error('Error status:', error.response.status);
-        console.error('Error details:', error.response.data);
       } else {
         console.error('Profile save failed:', error.message);
       }
