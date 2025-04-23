@@ -54,7 +54,8 @@ const EditProfileScreen = ({navigation}) => {
 
   const getUserIdAndData = async () => {
     const credentials = await getCredential();
-    setIsOrg(isOrganizer);
+    const result = await isOrganizer();
+        setIsOrg(result);
     setUserId(credentials.userId);
   };
 

@@ -25,6 +25,11 @@ import UserDiscountsScreen from '../screens/UserScreens/UserDiscountsScreen.js';
 import NavigatorForOrganizer from './NavigatorOrganizer';
 import NavigatorUser from './NavigatorUser.tsx';
 import {SignupScreenOrganizer} from "../screens/LoginSigninScreens/signupScreenOrganizer";
+import {ScanScreen} from "../screens/QRCode/ScanScreen.tsx";
+
+
+import ListEventScreen from '../screens/Home/HomeForOrganizer/ListEventScreen';
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -69,7 +74,7 @@ export default function AppNavigator() {
         options={{headerShown: false, title: 'Signup'}}
       />
 
-        <Stack.Screen
+      <Stack.Screen
         name="SignupOrganizer"
         component={SignupScreenOrganizer}
         options={{headerShown: false, title: 'Signup'}}
@@ -139,6 +144,8 @@ export default function AppNavigator() {
         component={UserDiscountsScreen}
         options={{headerShown: false}}
       />
+      <Stack.Screen name="list" component={ListEventScreen} />
+      <Stack.Screen name="ScanScreen" component={ScanScreen} />
     </Stack.Navigator>
   );
 }
