@@ -11,7 +11,7 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import BottomNavBarOrganizer from '../../../components/BottomNavbarForOrganizer';
 import {api, BASE_URL} from '../../Api';
-import {getCredential} from '../../../../utils/Storage';
+import {getCredential, logout} from '../../../../utils/Storage';
 
 const ListEventScreen = ({navigation}) => {
   const [events, setEvents] = useState([]);
@@ -63,8 +63,9 @@ const ListEventScreen = ({navigation}) => {
     fetchUser();
   }, [userID]);
 
-  const handleLogout = () => {
-    Alert.alert('Logout', 'You have been logged out.');
+  const handleLogout = async () => {
+    await logout();
+    navigation.navigate('Signin');
   };
 
   const handleDeleteEvent = eventID => {

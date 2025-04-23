@@ -22,9 +22,40 @@ const categories = [
 ];
 
 const HomeScreen = ({navigation}) => {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] =  useState<Event[] | null>(null);
   const [userID, setUserID] = useState(null);
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState<User | null>(null);
+
+  {/*todo : use these types */}
+  type User = {
+    firstName: string | null;
+    lastName: string | null;
+    city: string | null;
+    age: number;
+    email: string | null;
+    phoneNumber: string | null;
+    roleID: number;
+    roleName: string;
+    profileID: string | null
+    createdAt: string;
+    username: string;
+    profileImage: string | null;
+  };
+
+  type Event = {
+    eventID: number;
+    organizerID: number;
+    eventName: string;
+    eventType: string;
+    eventTime: string; // ISO datetime string
+    eventDate: string; // ISO datetime string
+    eventStatus: string;
+    description: string;
+    capacity: number;
+    price: number;
+    createdAt: string; // ISO datetime string
+  };
+
 
   useEffect(() => {
     const fetchUserID = async () => {
@@ -83,7 +114,7 @@ const HomeScreen = ({navigation}) => {
             <View>
               <Text style={styles.locationLabel}>Welcome</Text>
               <Text style={styles.locationValue}>
-                {userData.firstName} {userData.lastName}{' '}
+                {userData?.firstName } {userData?.lastName}  {' '}
               </Text>
             </View>
             <TouchableOpacity onPress={handleLogout}>
@@ -133,7 +164,7 @@ const HomeScreen = ({navigation}) => {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.horizontalScroll}>
-            {[1, 2, 3, 4].map((event, index) => (
+            {/*{[1, 2, 3, 4].map((event, index) => (
               <View key={index} style={styles.eventCardNew}>
                 <Text style={styles.eventTitle}>{event.eventName}</Text>
                 <Image
@@ -153,12 +184,35 @@ const HomeScreen = ({navigation}) => {
                   </Text>
                 </TouchableOpacity>
               </View>
+            ))}*/}
+            {/*todo: use this map  */}
+            {events?.map((event, index) => (
+                <View key={index} style={styles.eventCardNew}>
+                  <Text style={styles.eventTitle}>{event.eventName}</Text>
+                  <Image
+                      source={require('../../../assets/Images/event.jpg')}
+                      style={styles.eventImageNew}
+                  />
+                  <Text style={styles.eventDescription}>{event.description}</Text>
+                  <TouchableOpacity
+                      style={styles.detailsBtn}
+                      onPress={() =>
+                          navigation.navigate('EventDetailsScreen', {
+                            eventID: event.eventID,
+                          })
+                      }>
+                    <Text style={{color: '#fff', fontWeight: 'bold'}}>More Details</Text>
+                  </TouchableOpacity>
+                </View>
             ))}
+
           </ScrollView>
         </View>
 
+        {/*todo: remove this code or fix it */}
+
         {/* ✅ Event About You Section */}
-        <View style={styles.section}>
+  {/*      <View style={styles.section}>
           <View style={styles.rowBetween}>
             <Text style={styles.sectionTitle}>Event About You</Text>
             <TouchableOpacity
@@ -195,7 +249,7 @@ const HomeScreen = ({navigation}) => {
               </View>
             ))}
           </ScrollView>
-        </View>
+        </View>*/}
       </ScrollView>
       <BottomNavBar />
     </View>

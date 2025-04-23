@@ -8,7 +8,7 @@ import {
   Text,
 } from 'react-native';
 import {useRoute, useNavigation} from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const {width} = Dimensions.get('window');
 
@@ -17,10 +17,10 @@ const BottomNavBarOrganizer = () => {
   const navigation = useNavigation<any>(); // Use 'any' type for navigation
 
   const icons = [
-    {name: 'align-justify', screen: 'list', title: 'list Event'},
-    {name: 'file-plus', screen: 'fileplus', title: 'Create tiket'},
-    {name: 'log-in', screen: 'Map', title: 'scan QR'},
-    {name: 'user', screen: 'ShowProfile', title: 'Prifile'},
+    {name: 'menu', screen: 'list', title: 'list Event'},
+    // {name: 'file-plus', screen: 'fileplus', title: 'Create tiket'},
+    {name: 'qr-code-scanner', screen: 'ScanScreen', title: 'Check In'},
+    {name: 'person-outline', screen: 'ShowProfile', title: 'Prifile'},
   ];
 
   return (
