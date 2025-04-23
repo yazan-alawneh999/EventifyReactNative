@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-const SuccessDialog = ({ visible, setVisible, title, message }) => {
+ const SuccessDialog = ({ visible, setVisible, title, message }) => {
   return (
     <Modal
       transparent
@@ -36,6 +36,39 @@ const SuccessDialog = ({ visible, setVisible, title, message }) => {
         </View>
       </View>
     </Modal>
+  );
+};
+
+
+export  const SuccessDialogWithAction = ({ visible, setVisible, title, message,onConfirm }) => {
+  return (
+      <Modal
+          transparent
+          visible={visible}
+          animationType="fade"
+          onRequestClose={() => setVisible(false)}
+      >
+        <View style={styles.overlay}>
+          <View style={styles.dialog}>
+
+
+            <View style={styles.iconContainer}>
+              <View style={styles.checkmarkBackground}>
+                <Text style={styles.checkmark}>✔</Text>
+              </View>
+            </View>
+
+
+            <Text style={styles.DialogTitle}>{title}</Text>
+            <Text style={styles.message}>{message}</Text>
+
+
+            <TouchableOpacity style={styles.button} onPress={() => onConfirm()}>
+              <Text style={styles.buttonText}>Ok</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
   );
 };
 

@@ -76,6 +76,7 @@ return(
 
             {/* //Todo Navigate To All Events */}
             {/* navigation.navigate('AllEvents') */}
+                 {/*   //todo: fix navigate issue */}
             <TouchableOpacity style={styles.EditProfileButton} onPress={() => {navigation.navigate('Home')}}>
                 <View style={styles.NotFoundbuttonContainer}>
                     <Text style={styles.NotFoundButtonText}>Get Your Ticket Now!</Text>
