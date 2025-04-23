@@ -18,7 +18,7 @@ const BottomNavBarOrganizer = () => {
 
   const icons = [
     {name: 'align-justify', screen: 'list', title: 'list Event'},
-    {name: 'file-plus', screen: 'file-plus', title: 'Create tiket'},
+    {name: 'file-plus', screen: 'fileplus', title: 'Create tiket'},
     {name: 'log-in', screen: 'Map', title: 'scan QR'},
     {name: 'user', screen: 'ShowProfile', title: 'Prifile'},
   ];

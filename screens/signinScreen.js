@@ -11,31 +11,24 @@ import {
   SafeAreaView,
   StatusBar,
   Alert,
-
 } from 'react-native';
-import {
-  TextInput,
-  Button, IconButton,
-} from '@react-native-material/core';
+import {TextInput, Button, IconButton} from '@react-native-material/core';
 import axios from 'axios';
-import {getCredential,storeCredential} from "../utils/Storage";
+import {getCredential, storeCredential} from '../utils/Storage';
 // import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import Icon from 'react-native-vector-icons/Ionicons';
-
-
 
 const LogoElement = () => {
   return (
     <View style={styles.logoContainer}>
       <Image
-        source={require('../assets/images/logo.png')}
+        source={require('../src/assets/Images/logo.png')}
         style={styles.logoPic}
       />
     </View>
   );
 };
 const myIcon = <Icon name="rocket" size={30} color="#900" />;
-
 
 const SignUpLink = ({navigation}) => {
   return (
@@ -57,7 +50,6 @@ export default function SigninScreen({navigation}) {
   const [errorLogin, setErrorLogin] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-
   const validateInputs = () => {
     let error = {};
     if (!userName) error.username = 'Username is required';
@@ -67,70 +59,57 @@ export default function SigninScreen({navigation}) {
     return Object.keys(error).length === 0;
   };
 
-const handleLogin = async () => {
-  setIsLoading(true);
-  setErrorLogin("test")
-  if (!validateInputs()) {
-    setIsLoading(false);
-    return;
-  }
+  const handleLogin = async () => {
+    setIsLoading(true);
+    setErrorLogin('test');
+    if (!validateInputs()) {
+      setIsLoading(false);
+      return;
+    }
 
-  try {
-    const response = await axios.post(
-        "https://7130-5-45-132-73.ngrok-free.app/api/event-manager/auth/login",
+    try {
+      const response = await axios.post(
+        'https://7130-5-45-132-73.ngrok-free.app/api/event-manager/auth/login',
         {
           username: userName,
           password: pass,
-        }
-    );
-
-    console.log("Username:", userName, "Password:", pass);
-    console.log("✅ Login Success", response.data);
-    await storeCredential(response.data);
-
-  } catch (error) {
-    console.log("❌ Axios Error", error.message);
-    if (error.response) {
-      console.log("Server Response", error.response.data);
-    }
-    if (!error.response) {
-      setErrorLogin('Network error or no response from server');
-      return;
-    }
-    // Fix: error.status doesn't exist — should be error.response?.status
-    switch (error.response.status) {
-      case 401:
-        setErrorLogin(
-            `UnAuthorized`
-        );
-        break;
-      default:
-        setErrorLogin("Unknown error");
-
-    }
-
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-
-
-
-
-
-    if (errorLogin) {
-      Alert.alert('Login Error', errorLogin, [
-        {
-          text: 'Ok',
-          onPress: () => {
-
-          },
-          style: 'cancel',
         },
-      ]);
-    }
+      );
 
+      console.log('Username:', userName, 'Password:', pass);
+      console.log('✅ Login Success', response.data);
+      await storeCredential(response.data);
+    } catch (error) {
+      console.log('❌ Axios Error', error.message);
+      if (error.response) {
+        console.log('Server Response', error.response.data);
+      }
+      if (!error.response) {
+        setErrorLogin('Network error or no response from server');
+        return;
+      }
+      // Fix: error.status doesn't exist — should be error.response?.status
+      switch (error.response.status) {
+        case 401:
+          setErrorLogin(`UnAuthorized`);
+          break;
+        default:
+          setErrorLogin('Unknown error');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (errorLogin) {
+    Alert.alert('Login Error', errorLogin, [
+      {
+        text: 'Ok',
+        onPress: () => {},
+        style: 'cancel',
+      },
+    ]);
+  }
 
   if (isLoading) {
     return (
@@ -160,21 +139,20 @@ const handleLogin = async () => {
         value={pass}
         onChangeText={setPass}
         secureTextEntry={!showPassword}
-        trailing={(props) => (
-            <IconButton
-                onPress={() => setShowPassword(!showPassword)}
-                icon={(iconProps) => (
-                    <Icon
-                        name={showPassword ? 'eye-off' : 'eye'}
-                        size={24}
-                        color={iconProps.color}
-                    />
-                )}
-                {...props}
-            />
+        trailing={props => (
+          <IconButton
+            onPress={() => setShowPassword(!showPassword)}
+            icon={iconProps => (
+              <Icon
+                name={showPassword ? 'eye-off' : 'eye'}
+                size={24}
+                color={iconProps.color}
+              />
+            )}
+            {...props}
+          />
         )}
         leading={props => <Icon name="lock-closed-outline" {...props} />}
-
       />
       {errors.password ? (
         <Text style={styles.errorText}>{errors.password}</Text>
@@ -187,7 +165,6 @@ const handleLogin = async () => {
       />
 
       <SignUpLink navigation={navigation} />
-
     </View>
   );
 }

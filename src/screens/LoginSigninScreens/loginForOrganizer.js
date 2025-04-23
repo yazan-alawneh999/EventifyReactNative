@@ -10,40 +10,37 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
-
 import Icon from 'react-native-vector-icons/Ionicons';
 import {CommonActions} from '@react-navigation/native';
 import TextInput from '@react-native-material/core/src/TextInput';
 import IconButton from '@react-native-material/core/src/IconButton';
 import Button from '@react-native-material/core/src/Button';
 import {api, BASE_URL} from '../Api';
-import {
-  getCredential,
-  getRole,
-  isOrganizer,
-  storeCredential,
-} from '../../../utils/Storage';
-import axios from 'axios';
+import {storeCredential} from '../../../utils/Storage';
 
-const LogoElement = () => (
-  <View style={styles.logoContainer}>
-    <Image
-      source={require('../../assets/Images/logo1.jpg')}
-      style={styles.logoPic}
-    />
-  </View>
-);
+const LogoElement = () => {
+  return (
+    <View style={styles.logoContainer}>
+      <Image
+        source={require('../../assets/Images/logo1.jpg')}
+        style={styles.logoPic}
+      />
+    </View>
+  );
+};
 
-const SignUpLink = ({navigation}) => (
-  <View style={styles.signUplinkContainer}>
-    <Text style={styles.linkText}>Don't have an account? </Text>
-    <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-      <Text style={[styles.linkText, {color: '#626df8'}]}>Sign Up</Text>
-    </TouchableOpacity>
-  </View>
-);
+const SignUpLink = ({navigation}) => {
+  return (
+    <View style={styles.signUplinkContainer}>
+      <Text style={styles.linkText}>Don't have an account? </Text>
+      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+        <Text style={[styles.linkText, {color: '#626df8'}]}>Sign Up</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
-const SigninScreen = ({navigation}) => {
+const OrganizerSigninScreen = ({navigation}) => {
   const [userName, setUserName] = useState('');
   const [pass, setPass] = useState('');
   const [errors, setErrors] = useState({});
@@ -53,8 +50,12 @@ const SigninScreen = ({navigation}) => {
 
   const validateInputs = () => {
     let error = {};
-    if (!userName) error.username = 'Username is required';
-    if (!pass) error.password = 'Password is required';
+    if (!userName) {
+      error.username = 'Username is required';
+    }
+    if (!pass) {
+      error.password = 'Password is required';
+    }
 
     setErrors(error);
     return Object.keys(error).length === 0;
@@ -76,67 +77,55 @@ const SigninScreen = ({navigation}) => {
         },
       );
 
-      // const response = await axios.post(`https://18b9-109-107-251-55.ngrok-free.app/api/event-manager/auth/login`, {
-      //   username: userName,
-      //   password: pass,
-      // });
+      const userData = response.data;
 
-      console.log('✅ Login Success', response.data);
-      await storeCredential(response.data);
-
-      console.log('isOrganizer', await isOrganizer());
-      console.log('role', await getRole());
-
-      const creds = await getCredential();
-      if (creds?.token) {
-        const isOrg = await isOrganizer();
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{name: isOrg ? 'OrgnizerScreens' : 'UserScreens'}],
-          }),
-        ); // <-- this closing bracket was missing!
+      if (userData.role !== 2) {
+        setErrorLogin('This account is not for organizer');
+        setIsLoading(false);
+        return;
       }
+
+      console.log('✅ Organizer Login Success', userData);
+      await storeCredential(userData);
+      navigation.popToTop();
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'list'}],
+          ة,
+        }),
+      );
     } catch (error) {
       console.log('❌ Axios Error', error.message);
       if (error.response) {
         console.log('Server Response', error.response.data);
-        switch (error.response.status) {
-          case 401:
-            setErrorLogin('Unauthorized');
-            break;
-          default:
-            setErrorLogin('Unknown error');
-        }
-      } else {
+      }
+
+      if (!error.response) {
         setErrorLogin('Network error or no response from server');
+        return;
+      }
+
+      switch (error.response.status) {
+        case 401:
+          setErrorLogin('Invalid username or password');
+          break;
+        default:
+          setErrorLogin('Unknown error');
       }
     } finally {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    const checkLogin = async () => {
-      const creds = await getCredential();
-      if (creds?.token) {
-        const isOrg = await isOrganizer();
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{name: isOrg ? 'OrgnizerScreens' : 'UserScreens'}],
-          }),
-        );
-      }
-    };
 
-    checkLogin();
-  }, []);
   useEffect(() => {
     if (errorLogin) {
       Alert.alert('Login Error', errorLogin, [
         {
           text: 'Ok',
-          onPress: () => setErrorLogin(''),
+          onPress: () => {
+            setErrorLogin('');
+          },
           style: 'cancel',
         },
       ]);
@@ -154,25 +143,31 @@ const SigninScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.backButton}>
+        <Icon name="arrow-back" size={24} color="#626df8" />
+      </TouchableOpacity>
+
       <LogoElement />
+
       <TextInput
-        label="User Name"
+        label={'User Name'}
         variant="outlined"
         value={userName}
         onChangeText={setUserName}
         leading={props => <Icon name="person-outline" {...props} />}
       />
-      {errors.username && (
+      {errors.username ? (
         <Text style={styles.errorText}>{errors.username}</Text>
-      )}
+      ) : null}
 
       <TextInput
-        label="Password"
+        label={'Password'}
         variant="outlined"
         value={pass}
         onChangeText={setPass}
         secureTextEntry={!showPassword}
-        leading={props => <Icon name="lock-closed-outline" {...props} />}
         trailing={props => (
           <IconButton
             onPress={() => setShowPassword(!showPassword)}
@@ -186,19 +181,24 @@ const SigninScreen = ({navigation}) => {
             {...props}
           />
         )}
+        leading={props => <Icon name="lock-closed-outline" {...props} />}
       />
-      {errors.password && (
+      {errors.password ? (
         <Text style={styles.errorText}>{errors.password}</Text>
-      )}
+      ) : null}
 
-      <Button style={styles.signInButton} title="Login" onPress={handleLogin} />
+      <Button
+        style={styles.signInButton}
+        title={'Login as Organizer'}
+        onPress={handleLogin}
+      />
 
       <SignUpLink navigation={navigation} />
     </View>
   );
 };
 
-export default SigninScreen;
+export default OrganizerSigninScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -211,8 +211,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   logoContainer: {
+    display: 'flex',
     alignSelf: 'center',
-    marginTop: 100,
+    marginTop: 80,
     width: 200,
     height: 120,
   },
@@ -223,6 +224,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   signInButton: {
+    flexDirection: 'row',
     backgroundColor: '#626df8',
     borderRadius: 16,
     padding: 5,
@@ -233,8 +235,11 @@ const styles = StyleSheet.create({
     marginTop: '15%',
   },
   signUplinkContainer: {
+    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
+    height: '5%',
+    width: '100%',
     marginTop: '45%',
   },
   linkText: {
@@ -251,5 +256,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
     paddingTop: StatusBar.currentHeight,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 10,
   },
 });

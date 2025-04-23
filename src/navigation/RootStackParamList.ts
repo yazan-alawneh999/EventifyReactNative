@@ -9,6 +9,15 @@ export type RootStackParamList = {
   Signup: undefined;
   Signin: undefined;
   PayPalScreen: undefined;
+  user: undefined;
+  Map: undefined;
+  CreateEvent: undefined;
+  list: undefined;
+  fileplus: undefined;
+  ShowProfileScreen: undefined;
+  NavigatorForUser: undefined;
+  EditEvent: {eventId: string};
+  OrganizerSigninScreen: undefined;
   AllEventAttendanceScreen: undefined;
   AllDiscountsScreen: undefined;
   AddNewDiscountScreen: undefined;
@@ -21,4 +30,5 @@ export type RootStackParamList = {
   UserDiscountsScreen: undefined;
   OrgnizerScreens: undefined;
   UserScreens: undefined;
+  EventDetailsScreen: {eventId: string};
 };
