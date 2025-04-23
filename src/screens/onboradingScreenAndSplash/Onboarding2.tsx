@@ -40,8 +40,7 @@ const OnboardingScreen2 = () => {
         </Text>
 
         <View style={styles.buttonsRow}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('RootHomeScreen')}>
+          <TouchableOpacity onPress={() => navigation.navigate('Signin')}>
             <Text style={styles.skip}>Skip</Text>
           </TouchableOpacity>
           <View style={styles.dotsContainer}>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -11,8 +11,9 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 import BottomNavBar from '../../../components/BottomNavbarForUser';
-import Ionicons from "react-native-vector-icons/Ionicons";
-import {logout} from "../../../../utils/Storage";
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {getCredential, logout} from '../../../../utils/Storage';
+import {api, BASE_URL} from '../../Api';
 
 const categories = [
   {title: 'Sports', color: '#F8634C', icon: 'basketball-outline'},
@@ -20,22 +21,58 @@ const categories = [
   {title: 'Food', color: '#27C083', icon: 'restaurant-outline'},
 ];
 
-const HomeScreen = ({navigation }) => {
-  // const [userProfil,setUserProfile] = useState({});
-  // const getUserProfile = () => {
-  //   // hit api
-  //   setUserProfile({});
-  // };
-  // getUserProfile();
-  // if (userProfil === null) {
-  //   // ui inform user that there is an issue
-  // }
-  const handleLogout =  async () => {
+const HomeScreen = ({navigation}) => {
+  const [events, setEvents] = useState([]);
+  const [userID, setUserID] = useState(null);
+  const [userData, setUserData] = useState(null);
 
-    await logout()
-    navigation.navigate('Signin');
+  useEffect(() => {
+    const fetchUserID = async () => {
+      try {
+        const credential = await getCredential();
+        setUserID(credential?.userid || null);
+      } catch (error) {
+        console.error('Error getting credential:', error);
+      }
+    };
+    fetchUserID();
+  }, []);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!userID) return;
+
+      try {
+        const response = await api.get(
+          `${BASE_URL}/api/event-manager/profile-details/${userID}`,
+        );
+        setUserData(response.data);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+
+    fetchUser();
+  }, [userID]);
+
+  // جلب البيانات من API
+  const fetchEvents = async () => {
+    try {
+      const response = await api.get(`${BASE_URL}/api/Event/GetAllEvent`);
+      setEvents(response.data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
   };
 
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const handleLogout = async () => {
+    await logout();
+    navigation.navigate('Signin');
+  };
 
   return (
     <View style={{flex: 1, backgroundColor: '#f9f9f9'}}>
@@ -44,8 +81,10 @@ const HomeScreen = ({navigation }) => {
         <LinearGradient colors={['#5D50FE', '#6C63FF']} style={styles.header}>
           <View style={styles.headerTop}>
             <View>
-              <Text style={styles.locationLabel}>Current Location</Text>
-              <Text style={styles.locationValue}>New York, USA </Text>
+              <Text style={styles.locationLabel}>Welcome</Text>
+              <Text style={styles.locationValue}>
+                {userData.firstName} {userData.lastName}{' '}
+              </Text>
             </View>
             <TouchableOpacity onPress={handleLogout}>
               <Ionicons name="log-out-outline" size={24} color="white" />
@@ -96,18 +135,19 @@ const HomeScreen = ({navigation }) => {
             contentContainerStyle={styles.horizontalScroll}>
             {[1, 2, 3, 4].map((event, index) => (
               <View key={index} style={styles.eventCardNew}>
-                <Text style={styles.eventTitle}>Music Fiesta {event}</Text>
+                <Text style={styles.eventTitle}>{event.eventName}</Text>
                 <Image
                   source={require('../../../assets/Images/event.jpg')}
                   style={styles.eventImageNew}
                 />
-                <Text style={styles.eventDescription}>
-                  Join us for a night of unforgettable music and entertainment
-                  in the heart of the city.
-                </Text>
+                <Text style={styles.eventDescription}>{event.description}</Text>
                 <TouchableOpacity
                   style={styles.detailsBtn}
-                  onPress={() => navigation.navigate('EventDetailsScreen')}>
+                  onPress={() =>
+                    navigation.navigate('EventDetailsScreen', {
+                      eventID: event.eventID,
+                    })
+                  }>
                   <Text style={{color: '#fff', fontWeight: 'bold'}}>
                     More Details
                   </Text>
@@ -122,7 +162,11 @@ const HomeScreen = ({navigation }) => {
           <View style={styles.rowBetween}>
             <Text style={styles.sectionTitle}>Event About You</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('AllEventsScreen')}>
+              onPress={() =>
+                navigation.navigate('EventDetailsScreen', {
+                  eventID: event.eventID,
+                })
+              }>
               <Text style={styles.showAll}>Show All</Text>
             </TouchableOpacity>
           </View>
@@ -133,15 +177,14 @@ const HomeScreen = ({navigation }) => {
             contentContainerStyle={styles.horizontalScroll}>
             {[1, 2, 3].map((event, index) => (
               <View key={index} style={styles.eventCardNew}>
-                <Text style={styles.eventTitle}>Exclusive Meetup {event}</Text>
+                <Text style={styles.eventTitle}>
+                  Exclusive Meetup {event.eventName}
+                </Text>
                 <Image
                   source={require('../../../assets/Images/event.jpg')}
                   style={styles.eventImageNew}
                 />
-                <Text style={styles.eventDescription}>
-                  Based on your interests, don’t miss this chance to connect
-                  with others like you!
-                </Text>
+                <Text style={styles.eventDescription}>{event.description}</Text>
                 <TouchableOpacity
                   style={styles.detailsBtn}
                   onPress={() => navigation.navigate('EventDetailsScreen')}>
