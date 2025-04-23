@@ -18,6 +18,7 @@
     "@react-navigation/native-stack": "^7.3.9",
     "axios": "^1.8.4",
     "defaults": "^3.0.0",
+    "i": "^0.3.7",
     "jwt-decode": "^4.0.0",
     "react": "19.0.0",
     "react-native-gesture-handler": "^2.25.0",
