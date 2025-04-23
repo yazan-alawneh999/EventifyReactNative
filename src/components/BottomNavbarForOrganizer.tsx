@@ -17,7 +17,7 @@ const BottomNavBarOrganizer = () => {
   const navigation = useNavigation<any>(); // Use 'any' type for navigation
 
   const icons = [
-    {name: 'menu', screen: 'list', title: 'list Event'},
+    {name: 'menu', screen: 'list', title:  'Events'},
     // {name: 'file-plus', screen: 'fileplus', title: 'Create tiket'},
     {name: 'qr-code-scanner', screen: 'ScanScreen', title: 'Check In'},
     {name: 'person-outline', screen: 'ShowProfile', title: 'Prifile'},

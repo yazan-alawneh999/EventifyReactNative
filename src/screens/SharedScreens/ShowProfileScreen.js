@@ -15,7 +15,7 @@ import UserBottomNavBar from '../../components/BottomNavbarForUser.tsx';
 import OrgBottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BASE_URL} from '../Api';
-import {getCredential, logout} from '../../../utils/Storage.js';
+import {getCredential, logout,isOrganizer} from '../../../utils/Storage.js';
 
 const ProfilNotExists = ({navigation}) => {
   return (
@@ -46,10 +46,9 @@ const ProfilExists = ({
   location,
   phone,
   emailaddress,
+  isOrgan,
 }) => {
-  const handleLogout = async () => {
-    await logout();
-  };
+
   return (
     <View style={styles.container}>
       <Image
@@ -94,6 +93,40 @@ const ProfilExists = ({
         </View>
       </View>
 
+      {isOrgan ? (
+        <></>
+      ) : (
+        <>
+          <TouchableOpacity
+            style={styles.EditProfileButton}
+            onPress={() => {
+              navigation.navigate('AllTicktsScreen');
+            }}>
+            <View style={styles.buttonContainer}>
+              <Text style={styles.EditProfileButtonText}>Your Tickets</Text>
+              <View style={styles.ArrowIconContainer}>
+                <Ionicons name="arrow-forward" size={24} color="#fff" />
+              </View>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.EditProfileButton}
+            onPress={() => {
+              navigation.navigate('UserDiscountsScreen');
+            }}>
+            <View style={styles.buttonContainer}>
+              <Text style={styles.EditProfileButtonText}>Your Discount</Text>
+              <View style={styles.ArrowIconContainer}>
+                <Ionicons name="arrow-forward" size={24} color="#fff" />
+              </View>
+            </View>
+          </TouchableOpacity>
+      </>
+      )}
+
+
+{/* 
       <TouchableOpacity
         style={styles.EditProfileButton}
         onPress={() => {
@@ -118,17 +151,9 @@ const ProfilExists = ({
             <Ionicons name="arrow-forward" size={24} color="#fff" />
           </View>
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
-      <TouchableOpacity
-        style={styles.logoutButton}
-        onPress={() => {
-          handleLogout();
-          navigation.navigate('Signin');
-        }}>
-        <Ionicons name="exit" size={24} color="#ed1c00" />
-        <Text style={styles.LogoutText}>Logout</Text>
-      </TouchableOpacity>
+
     </View>
   );
 };
@@ -145,9 +170,12 @@ const ProfileScreen = ({navigation}) => {
   );
   const [accountExists, setAccountExists] = useState(true);
   const [userId, setUserId] = useState();
+  const [isOrg,setIsOrg] = useState(false);
 
   const getUserIdAndData = async () => {
     const credentials = await getCredential();
+    const result = await isOrganizer();
+    setIsOrg(result);
     setUserId(credentials.userId);
   };
   useEffect(() => {
@@ -216,15 +244,16 @@ const ProfileScreen = ({navigation}) => {
               location={city}
               phone={phoneNumber}
               emailaddress={email}
+              isOrgan={isOrg}
             />
           ) : (
             <ProfilNotExists navigation={navigation} />
           )}
         </ScrollView>
-        {userId === 2 ? (
-          <UserBottomNavBar navigation={navigation} />
-        ) : (
+        {isOrg ? (
           <OrgBottomNavBar navigation={navigation} />
+        ) : (
+          <UserBottomNavBar navigation={navigation} />
         )}
       </KeyboardAvoidingView>
     </SafeAreaView>

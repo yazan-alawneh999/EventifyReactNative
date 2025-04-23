@@ -66,6 +66,12 @@ const NavigatorForUser = () => {
         component={CreateProfileScreen}
         options={{headerShown: false}}
       />
+
+      <Stack.Screen
+              name="UserScreens"
+              component={NavigatorForUser}
+              options={{headerShown: false}}
+            />
     </Stack.Navigator>
   );
 };

@@ -9,24 +9,44 @@ import {
   ImageBackground,
   ActivityIndicator,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, RouteProp} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {api, BASE_URL} from '../../Api';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-const EventDetailsScreen = ({route}) => {
-  const navigation = useNavigation();
+type RootStackParamList = {
+  EventDetails: {eventID: number};
+  BuyTicket: {EventID: number};
+};
+
+type EventDetailsScreenRouteProp = RouteProp<RootStackParamList, 'EventDetails'>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+interface Event {
+  eventID: number;
+  eventName: string;
+  eventDate: string;
+  eventTime: string;
+  description: string;
+  price: number;
+}
+
+interface Props {
+  route: EventDetailsScreenRouteProp;
+}
+
+const EventDetailsScreen: React.FC<Props> = ({route}) => {
+  const navigation = useNavigation<NavigationProp>();
   const {eventID} = route.params;
 
-  const [event, setEvent] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [event, setEvent] = useState<Event | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await api.get(
-          `${BASE_URL}/api/Event/getEventByID/${eventID}`,
-        );
+        const response = await api.get(`${BASE_URL}/api/Event/getEventByID/${eventID}`);
         setEvent(response.data);
         setLoading(false);
       } catch (err) {
@@ -57,7 +77,6 @@ const EventDetailsScreen = ({route}) => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* صورة الحدث الثابتة + عنوان */}
       <ImageBackground
         source={require('../../../assets/Images/event.jpg')}
         style={styles.headerImage}>
@@ -71,7 +90,6 @@ const EventDetailsScreen = ({route}) => {
         </View>
       </ImageBackground>
 
-      {/* تفاصيل الحدث */}
       <View style={styles.card}>
         <Text style={styles.eventTitle}>{event.eventName}</Text>
 
@@ -103,7 +121,9 @@ const EventDetailsScreen = ({route}) => {
         <Text style={styles.aboutTitle}>About Event</Text>
         <Text style={styles.aboutText}>{event.description}</Text>
 
-        <TouchableOpacity style={styles.buyButton}>
+        <TouchableOpacity
+          style={styles.buyButton}
+          onPress={() => navigation.navigate('BuyTicket', {EventID: event.eventID})}>
           <Text style={styles.buyButtonText}>BUY TICKET ${event.price}</Text>
           <Ionicons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
@@ -186,6 +206,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 12,
+    marginLeft: 12,
   },
   followText: {
     color: '#6366F1',

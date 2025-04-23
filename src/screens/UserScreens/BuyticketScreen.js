@@ -179,7 +179,9 @@ const changeQuantity = (delta) => {
 
 
           <View style={styles.header}>
-            <Ionicons name="arrow-back" size={24} color="black"/>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+                          <Ionicons name="arrow-back" size={24} color="black" />
+            </TouchableOpacity>
             <Text style={styles.headerText}>Ticket info</Text>
             <Ionicons name="share-social-outline" size={24} color="black" />
           </View>

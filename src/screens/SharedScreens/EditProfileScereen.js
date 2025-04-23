@@ -20,7 +20,7 @@ import OrgBottomNavBar from '../../components/BottomNavbarForOrganizer.tsx';
 import SuccessDialog from '../../components/SucesssPopupDialog';
 import FailedDialog from '../../components/FailedPopupDialog.js';
 import {BASE_URL} from '../Api';
-import {getCredential} from '../../../utils/Storage.js';
+import {getCredential,isOrganizer} from '../../../utils/Storage.js';
 
 const {width, height} = Dimensions.get('window');
 
@@ -37,6 +37,8 @@ const EditProfileScreen = ({navigation}) => {
   const [RoleID, setRoleID] = useState();
   const [userNamr, setUserName] = useState();
   const [userId, setUserId] = useState();
+  const [isOrg,setIsOrg] = useState(false);
+
 
   const isFormValid = () => {
     return (
@@ -52,6 +54,8 @@ const EditProfileScreen = ({navigation}) => {
 
   const getUserIdAndData = async () => {
     const credentials = await getCredential();
+    const result = await isOrganizer();
+        setIsOrg(result);
     setUserId(credentials.userId);
   };
 
@@ -316,10 +320,10 @@ const EditProfileScreen = ({navigation}) => {
             <Text style={styles.saveButtonText}>Save Changes</Text>
           </TouchableOpacity>
         </ScrollView>
-        {userId === 2 ? (
-          <UserBottomNavBar navigation={navigation} />
-        ) : (
+        {isOrg ? (
           <OrgBottomNavBar navigation={navigation} />
+        ) : (
+          <UserBottomNavBar navigation={navigation} />
         )}
       </KeyboardAvoidingView>
     </SafeAreaView>
