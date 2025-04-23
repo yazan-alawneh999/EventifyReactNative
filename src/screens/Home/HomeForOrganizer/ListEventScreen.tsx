@@ -82,6 +82,7 @@ const ListEventScreen = ({navigation}) => {
 
 
   const handleLogout = async () => {
+    console.log("logout");
     await logout();
     resetApiHeaders()
     navigation.navigate('Signin');
@@ -204,11 +205,14 @@ const ListEventScreen = ({navigation}) => {
             </Text>
             <Text style={styles.dateText}>{today}</Text>
           </View>
+          <TouchableOpacity onPress={handleLogout}>
+            <Ionicons name="log-out-outline" size={24} color="white" />
+          </TouchableOpacity>
 
         </View>
 
         {/* عنوان الصفحة في المنتصف */}
-        <Text style={styles.pageTitle}>List Event</Text>
+        {/*<Text style={styles.pageTitle}>List Event</Text>*/}
       </View>
 
       <FlatList
