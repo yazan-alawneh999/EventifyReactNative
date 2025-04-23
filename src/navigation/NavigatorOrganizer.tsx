@@ -36,6 +36,11 @@ const NavigatorForOrganizer = () => {
         component={SignupScreen}
         options={{headerShown: false, title: 'Signup'}}
       />
+      <Stack.Screen
+        name="ShowProfileScreen"
+        component={ProfileScreen}
+        options={{headerShown: false, title: 'Signup'}}
+      />
     </Stack.Navigator>
   );
 };

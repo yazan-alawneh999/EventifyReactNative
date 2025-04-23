@@ -35,7 +35,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
   return (
-    <Stack.Navigator initialRouteName="RootSplashScreen">
+    <Stack.Navigator initialRouteName="OrgnizerScreens">
       <Stack.Screen
         name="RootSplashScreen"
         component={SplashScreen}

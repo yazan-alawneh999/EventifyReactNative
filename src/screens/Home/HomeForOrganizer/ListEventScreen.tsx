@@ -54,7 +54,21 @@ const ListEventScreen = ({navigation}) => {
         const response = await api.get(
           `${BASE_URL}/api/event-manager/profile-details/${userID}`,
         );
-        setUserData(response.data);
+
+        // تحقق من البيانات، وإذا كانت فارغة أو غير موجودة، تعيين القيم الافتراضية
+        if (!response.data) {
+          setUserData({
+            firstName: 'Ali',
+            lastName: 'Ahmad',
+            city: 'Amman',
+            age: 25,
+            email: 'ali1@example.com',
+            phoneNumber: '0790000001',
+            profileImage: '../../../../src/assets/Images/person.jpg',
+          });
+        } else {
+          setUserData(response.data);
+        }
       } catch (error) {
         console.error('Error fetching user:', error);
       }
@@ -164,12 +178,17 @@ const ListEventScreen = ({navigation}) => {
       <View style={styles.header}>
         <View style={styles.organizerRow}>
           <Image
-            source={{uri: userData?.profileImage}}
+            source={
+              userData?.profileImage
+                ? {uri: userData.profileImage}
+                : require('../../../../src/assets/Images/person.jpg')
+            }
             style={styles.profileImage}
           />
           <View style={{flex: 1}}>
             <Text style={styles.organizerName}>
-              Welcome, {userData?.username}
+              Welcome, {userData?.firstName || 'Ali'}{' '}
+              {userData?.lastName || 'Ahmad'}
             </Text>
             <Text style={styles.dateText}>{today}</Text>
           </View>
@@ -177,12 +196,17 @@ const ListEventScreen = ({navigation}) => {
             <Ionicons name="log-out-outline" size={24} color="white" />
           </TouchableOpacity>
         </View>
+
+        {/* عنوان الصفحة في المنتصف */}
+        <Text style={styles.pageTitle}>List Event</Text>
       </View>
 
       <FlatList
         data={events}
         renderItem={renderEventCard}
-        keyExtractor={item => item.eventID}
+        keyExtractor={item =>
+          item.eventID ? item.eventID.toString() : String(Math.random())
+        }
         contentContainerStyle={{paddingBottom: 120}}
       />
 
@@ -196,8 +220,6 @@ const ListEventScreen = ({navigation}) => {
 };
 
 export default ListEventScreen;
-
-// === STYLES ===
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -210,6 +232,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
+    position: 'relative',
   },
   organizerRow: {
     flexDirection: 'row',
@@ -230,6 +253,18 @@ const styles = StyleSheet.create({
   dateText: {
     color: '#ddd',
     fontSize: 12,
+  },
+  // تنسيق العنوان في المنتصف
+  pageTitle: {
+    paddingTop: 60,
+    position: 'absolute',
+    top: '50%',
+    left: 0,
+    right: 0,
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
   },
   card: {
     backgroundColor: '#fff',
