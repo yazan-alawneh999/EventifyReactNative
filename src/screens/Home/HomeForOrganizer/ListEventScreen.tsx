@@ -86,7 +86,7 @@ const ListEventScreen = ({navigation}) => {
 
   const handleLogout = async () => {
     await logout();
-    navigation.navigate('Signin');
+    navigation.replace('Signin');
   };
 
   const handleDeleteEvent = eventID => {

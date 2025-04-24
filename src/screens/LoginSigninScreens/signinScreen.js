@@ -17,6 +17,7 @@ import TextInput from '@react-native-material/core/src/TextInput';
 import IconButton from '@react-native-material/core/src/IconButton';
 import Button from '@react-native-material/core/src/Button';
 import {api, BASE_URL} from '../Api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   getCredential,
   getRole,
@@ -115,6 +116,13 @@ const SigninScreen = ({navigation}) => {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    const clearAll = async () => {
+      await AsyncStorage.clear();
+    };
+
+    clearAll();
+  }, []);
   useEffect(() => {
     const checkLogin = async () => {
       const creds = await getCredential();
