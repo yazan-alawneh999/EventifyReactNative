@@ -41,24 +41,49 @@ export default function TicketInfoScreen({ route,navigation }) {
   // eslint-disable-next-line no-unused-vars
   const [status, setStatus] = useState('Pending');
 
-  const handleResponse = (data) => {
+//   const handleResponse = async (data) => {
+//
+//
+//     //     if (data.title === 'success') {
+//     //
+//     //     setShowModal(false);
+//     //     setStatus('Payment has done successfully');
+//     //     console.log("onPaypal Success")
+//     //       try{
+//     //         await BuyTicket();
+//     //       }catch (err){
+//     //       console.log(err);
+//     //       }
+//     //
+//     //
+//     // }
+//     //     else if (data.title === 'cancel') {
+//     //     setShowModal(false);
+//     //     setStatus('Cancelled');
+//     //     console.log("onPaypal cancel")
+//     // } else {
+//     //     return;
+//     // }
+// };
+  const handleResponse = async (data) => {
+    if (data.title === 'success') {
+      setShowModal(false);
+      setStatus('Payment has done successfully');
+      console.log("✅ onPaypal Success - Attempting to call BuyTicket");
 
-        if (data.title === 'success') {
-
-        setShowModal(false);
-        setStatus('Payment has done successfully');
-        console.log("onPaypal Success")
-        BuyTicket();
+      try {
+        await BuyTicket();
+        console.log("✅ BuyTicket was called successfully");
+      } catch (err) {
+        console.log("❌ Error during BuyTicket:", err);
+      }
 
     } else if (data.title === 'cancel') {
-        setShowModal(false);
-        setStatus('Cancelled');
-        console.log("onPaypal cancel")
-    } else {
-        return;
+      setShowModal(false);
+      setStatus('Cancelled');
+      console.log("❌ onPaypal cancel");
     }
-};
-
+  };
 
   let EventID = route?.params?.EventID ?? 6;
 
@@ -66,6 +91,7 @@ export default function TicketInfoScreen({ route,navigation }) {
   const getUserIdAndData = async () => {
     const credentials = await getCredential();
     setUserId(credentials.userId);
+
   };
 
   useEffect(() => {
@@ -124,7 +150,10 @@ const BuyTicket = async () => {
     }
 
       try {
-        const token = (await getCredential()).token;
+        // const token = (await getCredential()).token;
+        const credentials = await getCredential();  // move inside here
+        const token = credentials.token;
+        const userId = credentials.userId;
         const response = await axios.post(`${BASE_URL}/api/BuyTicket`,
             {
               t_EventID:EventID,
@@ -138,6 +167,7 @@ const BuyTicket = async () => {
                 },
               }
         );
+        console.log("userId in BuyTicket", userId);
         if (response.status === 200 || response.status === 201) {
           setBuyVisible(true);
         }
@@ -169,7 +199,7 @@ const changeQuantity = (delta) => {
             >
                 <WebView
                     source={{
-                        uri: `https://d918-149-200-133-207.ngrok-free.app/?amount=${TotalPrice}`,
+                        uri: `https://9469-149-200-133-207.ngrok-free.app/paypal/?amount=${TotalPrice}`,
                     }}
                     onNavigationStateChange={handleResponse}
                     injectedJavaScript={'document.f1.submit()'}

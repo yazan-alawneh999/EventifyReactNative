@@ -69,7 +69,7 @@ const SplashScreen: React.FC<Props> = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Animated.Image
-        source={require('../../assets/Images/logo.png')}
+          source={require('../../assets/Images/SmallLogo1.png')}
         style={[
           styles.image,
           {opacity: imageOpacity, transform: [{translateY: imageAnim}]},
