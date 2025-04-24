@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -11,15 +11,16 @@ import {WebView} from 'react-native-webview';
 import Geolocation from '@react-native-community/geolocation';
 import BottomNavBar from '../../../components/BottomNavbarForUser';
 import {api, BASE_URL} from '../../Api';
+import {useFocusEffect} from '@react-navigation/native';
 
 const MapScreen = () => {
   const [location, setLocation] = useState<{
     latitude: number;
     longitude: number;
   } | null>(null);
-
   const [searchTerm, setSearchTerm] = useState('');
   const [events, setEvents] = useState<any[]>([]);
+  const [webViewKey, setWebViewKey] = useState(0); // 👈 لإعادة تحميل WebView
 
   const requestLocationPermission = useCallback(async () => {
     if (Platform.OS === 'android') {
@@ -33,11 +34,6 @@ const MapScreen = () => {
       getLocation();
     }
   }, []);
-
-  useEffect(() => {
-    requestLocationPermission();
-    fetchEvents();
-  }, [requestLocationPermission]);
 
   const getLocation = () => {
     Geolocation.getCurrentPosition(
@@ -58,86 +54,73 @@ const MapScreen = () => {
         `${BASE_URL}/api/Location/getallPinLocationEachEvent`,
       );
       setEvents(response.data);
+      setWebViewKey(prev => prev + 1); // 👈 تحديث المفتاح لإعادة تحميل WebView
     } catch (error) {
       console.error('Error fetching events:', error);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      requestLocationPermission();
+      fetchEvents();
+    }, [requestLocationPermission]),
+  );
 
   const filteredEvents = events.filter(event =>
     event.eventName.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const mapHtml = `
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <style>
-      html, body, #map { height: 100%; margin: 0; padding: 0; }
-    </style>
-  </head>
-  <body>
-    <div id="map"></div>
-    <script>
-      var map = L.map('map', { zoomControl: true }).setView([0, 0], 2);
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+      <style>
+        html, body, #map { height: 100%; margin: 0; padding: 0; }
+      </style>
+    </head>
+    <body>
+      <div id="map"></div>
+      <script>
+        var map = L.map('map', { zoomControl: true }).setView([0, 0], 2);
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-      function updateMap(lat, lng) {
-        L.marker([lat, lng]).addTo(map)
-          .bindPopup("You are here").openPopup();
-      }
+        function addEvents(eventsJson) {
+          const events = JSON.parse(eventsJson);
+          const bounds = [];
 
-      function addEvents(eventsJson) {
-        const events = JSON.parse(eventsJson);
-        const bounds = [];
+          events.forEach(event => {
+            const marker = L.marker([event.location.latitude, event.location.longitude]).addTo(map);
+            marker.bindPopup(\`
+              <b>\${event.eventName}</b><br/>
+              \${event.description}<br/>
+              <i>\${event.eventDate}</i>
+            \`);
 
-        events.forEach(event => {
-          const marker = L.marker([event.location.latitude, event.location.longitude]).addTo(map);
-          marker.bindPopup(\`
-            <b>\${event.eventName}</b><br/>
-            \${event.description}<br/>
-            <i>\${event.eventDate}</i>
-          \`);
+            marker.on('click', function() {
+              window.ReactNativeWebView.postMessage(JSON.stringify(event));
+            });
 
-          // Send data back to React Native when clicking on a marker
-          marker.on('click', function() {
-            window.ReactNativeWebView.postMessage(JSON.stringify(event));
+            bounds.push([event.location.latitude, event.location.longitude]);
           });
 
-          bounds.push([event.location.latitude, event.location.longitude]);
+          if (bounds.length > 0) {
+            map.fitBounds(bounds, {padding: [50, 50]});
+          }
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+          addEvents('${JSON.stringify(filteredEvents)}');
         });
-
-        if (bounds.length > 0) {
-          map.fitBounds(bounds, {padding: [50, 50]});
-        }
-      }
-
-      // Disable click-to-drop-pin
-      map.on('click', function(e) {
-        // Do nothing intentionally
-      });
-
-      window.addEventListener('message', function(event) {
-        const eventData = JSON.parse(event.data);
-        const targetEvent = events.find(e => e.eventID === eventData.eventID);
-        if (targetEvent) {
-          map.setView([targetEvent.location.latitude, targetEvent.location.longitude], 15);
-        }
-      });
-    </script>
-  </body>
-  </html>
-`;
-
-  const injectedJS = `
-    ${location ? `updateMap(${location.latitude}, ${location.longitude});` : ''}
-    addEvents('${JSON.stringify(filteredEvents)}');
-    true;
+      </script>
+    </body>
+    </html>
   `;
 
   const handleMessage = (event: any) => {
@@ -161,11 +144,11 @@ const MapScreen = () => {
       </View>
       <View style={styles.container}>
         <WebView
+          key={webViewKey} // 👈 هذا مهم لإعادة تحميل WebView
           originWhitelist={['*']}
           source={{html: mapHtml}}
           javaScriptEnabled={true}
           domStorageEnabled={true}
-          injectedJavaScript={injectedJS}
           onMessage={handleMessage}
         />
       </View>

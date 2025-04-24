@@ -222,9 +222,9 @@ const ProfileScreen = ({navigation}) => {
           )}
         </ScrollView>
         {userId === 2 ? (
-          <UserBottomNavBar navigation={navigation} />
-        ) : (
           <OrgBottomNavBar navigation={navigation} />
+        ) : (
+          <UserBottomNavBar navigation={navigation} />
         )}
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -14,6 +15,7 @@ import BottomNavBar from '../../../components/BottomNavbarForUser';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {getCredential, logout} from '../../../../utils/Storage';
 import {api, BASE_URL} from '../../Api';
+import {useFocusEffect} from '@react-navigation/native';
 
 const categories = [
   {title: 'Sports', color: '#F8634C', icon: 'basketball-outline'},
@@ -62,7 +64,7 @@ const HomeScreen = ({navigation}) => {
     const fetchUserID = async () => {
       try {
         const credential = await getCredential();
-        setUserID(credential?.userid || null);
+        setUserID(credential.userid || null);
       } catch (error) {
         console.error('Error getting credential:', error);
       }
@@ -101,6 +103,12 @@ const HomeScreen = ({navigation}) => {
     fetchEvents();
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchEvents(); // عند كل مرة يرجع المستخدم للشاشة
+    }, []),
+  );
+
   const handleLogout = async () => {
     await logout();
     navigation.navigate('Signin');
@@ -125,11 +133,17 @@ const HomeScreen = ({navigation}) => {
 
           {/* Wrap the search input with TouchableOpacity */}
           <TouchableOpacity
-            style={styles.filterBtn}
+            style={styles.searchButton}
             onPress={() => {
-              navigation.navigate('AllEventsScreen'); // Navigate to the "AllEventsScreen"
+              navigation.navigate('AllEventsScreen');
             }}>
-            <Icon name="search" size={20} color="#ccc" />
+            <Icon
+              name="search-outline"
+              size={20}
+              color="#fff"
+              style={{marginRight: 8}}
+            />
+            <Text style={styles.searchButtonText}>To Search Click Here</Text>
           </TouchableOpacity>
 
           <ScrollView

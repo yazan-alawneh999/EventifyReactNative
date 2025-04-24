@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import BottomNavBarOrganizer from '../../../components/BottomNavbarForOrganizer';
 import {api, BASE_URL} from '../../Api';
 import {getCredential, logout} from '../../../../utils/Storage';
+import {useFocusEffect} from '@react-navigation/native';
 
 const ListEventScreen = ({navigation}) => {
   const [events, setEvents] = useState([]);
@@ -31,8 +32,14 @@ const ListEventScreen = ({navigation}) => {
   };
 
   useEffect(() => {
-    fetchEvents();
+    fetchEvents(); // عند أول تحميل
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchEvents(); // عند كل مرة يرجع المستخدم للشاشة
+    }, []),
+  );
 
   useEffect(() => {
     const fetchUserID = async () => {
@@ -136,15 +143,15 @@ const ListEventScreen = ({navigation}) => {
         <Text style={styles.label}>
           📍 Address: <Text style={styles.value}>{item.location?.address}</Text>
         </Text>
-        <Text style={styles.label}>
+        {/* <Text style={styles.label}>
           🌍 Latitude:{' '}
           <Text style={styles.value}>{item.location?.latitude}</Text>
         </Text>
         <Text style={styles.label}>
           🌍 Longitude:{' '}
           <Text style={styles.value}>{item.location?.longitude}</Text>
-        </Text>
-        <Text style={styles.label}>📝 {item.description}</Text>
+        </Text> */}
+        <Text style={styles.label}>📝description : {item.description}</Text>
         <Text style={styles.label}>
           👥 Capacity: <Text style={styles.value}>{item.capacity}</Text>
         </Text>
